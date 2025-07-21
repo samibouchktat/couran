@@ -20,4 +20,5 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),              # accès à l'admin
     path('', include('inventory.urls')),           # redirige la racine vers inventory/urls.py
+    
 ]

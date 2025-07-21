@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Liste des professeurs</h1>
+  <a href="{% url 'teacher_add' %}" class="btn btn-primary mb-3">Ajouter un professeur</a>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Années d’expérience</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for teacher in teachers %}
+        <tr>
+          <td>{{ teacher.user.get_full_name }}</td>
+          <td>{{ teacher.experience_years }}</td>
+          <td>
+            <a href="{% url 'teacher_edit' teacher.pk %}">Modifier</a> |
+            <a href="{% url 'teacher_delete' teacher.pk %}">Supprimer</a>
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="3">Aucun professeur.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

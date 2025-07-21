@@ -318,8 +318,9 @@
       <div class="header-logo">
         <i class="fas fa-book-open"></i> Couran
       </div>
-      <div class="header-actions">
-        <a href="/login/" class="btn btn-login">Connexion</a>
+      <div class="header-csrf">
+        {% csrf_token %}
+                <a href="/login/" class="btn btn-login">Connexion</a>
         <a href="/aide/" class="btn btn-help">Aide</a>
       </div>
     </div>
@@ -336,7 +337,7 @@
       <div class="bismillah">بِسْمِ ٱللَّٰهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</div>
       <h1 class="hero-title">Découvre, comprends et mémorise le Coran<br><span style="font-size:1.5rem; font-weight:400;">pour illuminer ta vie</span></h1>
       <p class="hero-subtitle">Une plateforme moderne et accessible à tous pour apprendre le Saint Coran, progresser à son rythme et vivre une expérience spirituelle unique.</p>
-      <a href="#inscription" class="btn btn-gold btn-lg">Commencer l’aventure</a>
+      <a href="/login/" class="btn btn-gold btn-lg">Commencer l’aventure</a>
     </section>
 
     <!-- POURQUOI APPRENDRE LE CORAN -->
