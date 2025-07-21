@@ -1,0 +1,24 @@
+{% extends "inventory/base.html" %}
+{% block title %}Ajouter un administrateur{% endblock %}
+{% block content %}
+  <h1 class="mb-4">
+    {% if form.instance.pk %}Modifier un admin{% else %}Ajouter un admin{% endif %}
+  </h1>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    {% for field in form %}
+      <div class="mb-3">
+        {{ field.label_tag }}
+        {{ field }}
+        {% for err in field.errors %}
+          <div class="text-danger">{{ err }}</div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-success">
+      {% if form.instance.pk %}Enregistrer{% else %}Créer{% endif %}
+    </button>
+    <a href="{% url 'inventory:admin-list' %}" class="btn btn-secondary ms-2">Annuler</a>
+  </form>
+{% endblock %}

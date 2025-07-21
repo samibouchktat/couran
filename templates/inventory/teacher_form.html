@@ -1,10 +1,17 @@
 {% extends "base.html" %}
+
+{% block title %}
+  {% if form.instance.pk %}Modifier un professeur{% else %}Ajouter un professeur{% endif %}
+{% endblock %}
+
 {% block content %}
-  <h1>{% if form.instance.pk %}Modifier{% else %}Ajouter{% endif %} un professeur</h1>
+  <h1>
+    {% if form.instance.pk %}Modifier un professeur{% else %}Ajouter un professeur{% endif %}
+  </h1>
   <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <button class="btn btn-success" type="submit">Enregistrer</button>
-    <a href="{% url 'teacher_list' %}" class="btn btn-secondary">Annuler</a>
+    <a href="{% url 'inventory:teacher-list' %}" class="btn btn-secondary">Annuler</a>
   </form>
 {% endblock %}

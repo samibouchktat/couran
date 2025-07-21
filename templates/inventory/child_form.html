@@ -1,10 +1,67 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+  {% if form.instance.pk %}Modifier un enfant{% else %}Ajouter un enfant{% endif %}
+{% endblock %}
+
 {% block content %}
-  <h1>{% if form.instance.pk %}Modifier{% else %}Ajouter{% endif %} un enfant</h1>
-  <form method="post">
+<div class="container-fluid mt-4">
+  <h1 class="mb-4">
+    {% if form.instance.pk %}Modifier un enfant{% else %}Ajouter un enfant{% endif %}
+  </h1>
+
+  <form method="post" novalidate>
     {% csrf_token %}
-    {{ form.as_p }}
-    <button class="btn btn-success" type="submit">Enregistrer</button>
-    <a href="{% url 'child_list' %}" class="btn btn-secondary">Annuler</a>
+    {{ form.non_field_errors }}
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        {{ form.user.label_tag }}
+        {{ form.user }}
+        {% for err in form.user.errors %}
+          <div class="text-danger">{{ err }}</div>
+        {% endfor %}
+      </div>
+      <div class="col-md-6 mb-3">
+        {{ form.parent.label_tag }}
+        {{ form.parent }}
+        {% for err in form.parent.errors %}
+          <div class="text-danger">{{ err }}</div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        {{ form.classroom.label_tag }}
+        {{ form.classroom }}
+        {% for err in form.classroom.errors %}
+          <div class="text-danger">{{ err }}</div>
+        {% endfor %}
+      </div>
+      <div class="col-md-3 mb-3">
+        {{ form.arabic_level.label_tag }}
+        {{ form.arabic_level }}
+        {% for err in form.arabic_level.errors %}
+          <div class="text-danger">{{ err }}</div>
+        {% endfor %}
+      </div>
+      <div class="col-md-3 mb-3">
+        {{ form.learning_level.label_tag }}
+        {{ form.learning_level }}
+        {% for err in form.learning_level.errors %}
+          <div class="text-danger">{{ err }}</div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-success">
+      Enregistrer
+    </button>
+    <a href="{% url 'inventory:child-list' %}" class="btn btn-secondary ms-2">
+      Annuler
+    </a>
   </form>
+</div>
 {% endblock %}

@@ -1,30 +1,100 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Dashboard Administrateur - Couran</title>
-    <link rel="stylesheet" href="/static/css/style.css">
-</head>
-<body>
-    <h1>Tableau de bord Administrateur</h1>
-    <nav>
-        <ul>
-            <li><a href="/teachers/">Gestion des professeurs</a></li>
-            <li><a href="/students/">Gestion des élèves</a></li>
-            <li><a href="/groups/">Gestion des groupes</a></li>
-            <li><a href="/payments/">Gestion des paiements</a></li>
-            <li><a href="/attendance/">Gestion des présences</a></li>
-        </ul>
-    </nav>
-    <section>
-        <h2>Statistiques globales</h2>
-        <ul>
-            <li>Nombre total d'élèves : ...</li>
-            <li>Nombre total de groupes : ...</li>
-            <li>Nombre total de professeurs : ...</li>
-            <li>Retards de paiements : ...</li>
-            <li>Taux de présence moyen : ...</li>
-        </ul>
-    </section>
-</body>
-</html> 
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}Tableau de bord Administrateur{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+  <h1 class="mb-4">Tableau de bord Administrateur</h1>
+
+  <div class="row g-4">
+    <!-- Nombre de professeurs -->
+    <div class="col-sm-6 col-lg-3">
+      <div class="card text-white bg-primary h-100">
+        <div class="card-body d-flex align-items-center">
+          <i class="fas fa-chalkboard-teacher fa-2x me-3"></i>
+          <div>
+            <h5 class="card-title mb-0">{{ teachers|intcomma }}</h5>
+            <small>Professeurs</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nombre d'élèves -->
+    <div class="col-sm-6 col-lg-3">
+      <div class="card text-white bg-success h-100">
+        <div class="card-body d-flex align-items-center">
+          <i class="fas fa-user-graduate fa-2x me-3"></i>
+          <div>
+            <h5 class="card-title mb-0">{{ students|intcomma }}</h5>
+            <small>Élèves</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nombre de groupes -->
+    <div class="col-sm-6 col-lg-3">
+      <div class="card text-white bg-info h-100">
+        <div class="card-body d-flex align-items-center">
+          <i class="fas fa-users fa-2x me-3"></i>
+          <div>
+            <h5 class="card-title mb-0">{{ groups|intcomma }}</h5>
+            <small>Groupes</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- %Moyenne mémorisation -->
+    <div class="col-sm-6 col-lg-3">
+      <div class="card text-white bg-warning h-100">
+        <div class="card-body d-flex align-items-center">
+          <i class="fas fa-book-reader fa-2x me-3"></i>
+          <div>
+            <h5 class="card-title mb-0">{{ avg_mem|floatformat:1 }} %</h5>
+            <small>Mémorisation moyenne</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4 mt-3">
+    <!-- Retards de paiement -->
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+          <span><i class="fas fa-file-invoice-dollar me-2"></i>Retards de paiement</span>
+          <span class="badge bg-light text-dark">{{ late_pay }}</span>
+        </div>
+        <div class="card-body">
+          <p>Nombre d’enregistrements de cotisations en retard.</p>
+          <a href="{% url 'inventory:payment-export' %}?filter=late" class="btn btn-sm btn-outline-danger">
+  Exporter CSV
+</a>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Taux de présence -->
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+          <span><i class="fas fa-calendar-check me-2"></i>Taux de présence</span>
+          <span class="badge bg-light text-dark">{{ pres_rate|floatformat:0 }} %</span>
+        </div>
+        <div class="card-body">
+          <p>Taux moyen de présence globale.</p>
+          <a href="{% url 'inventory:presence-export' year=today.year month=today.month %}"
+             class="btn btn-sm btn-outline-secondary">
+            Exporter CSV
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

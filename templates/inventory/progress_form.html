@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    {% if object %}Modifier la Progression{% else %}Nouvelle Progression{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-book-reader me-2"></i>
+                        {% if object %}
+                            Modifier la Progression
+                        {% else %}
+                            Nouvelle Progression
+                        {% endif %}
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.child.id_for_label }}" class="form-label">
+                                    <i class="fas fa-user-graduate me-1"></i>
+                                    Élève *
+                                </label>
+                                {{ form.child }}
+                                {% if form.child.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.child.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.surah.id_for_label }}" class="form-label">
+                                    <i class="fas fa-quran me-1"></i>
+                                    Sourate *
+                                </label>
+                                {{ form.surah }}
+                                {% if form.surah.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.surah.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.verse.id_for_label }}" class="form-label">
+                                    <i class="fas fa-bookmark me-1"></i>
+                                    Verset *
+                                </label>
+                                {{ form.verse }}
+                                {% if form.verse.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.verse.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.hizb.id_for_label }}" class="form-label">
+                                    <i class="fas fa-star me-1"></i>
+                                    Hizb
+                                </label>
+                                {{ form.hizb }}
+                                {% if form.hizb.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.hizb.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.chapter.id_for_label }}" class="form-label">
+                                    <i class="fas fa-book me-1"></i>
+                                    Chapitre
+                                </label>
+                                {{ form.chapter }}
+                                {% if form.chapter.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.chapter.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.performance.id_for_label }}" class="form-label">
+                                    <i class="fas fa-chart-line me-1"></i>
+                                    Performance *
+                                </label>
+                                {{ form.performance }}
+                                {% if form.performance.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.performance.errors.0 }}
+                                </div>
+                                {% endif %}
+                                <small class="form-text text-muted">
+                                    Évaluez la performance sur une échelle de 1 à 5
+                                </small>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.date_retention.id_for_label }}" class="form-label">
+                                    <i class="fas fa-calendar me-1"></i>
+                                    Date de mémorisation *
+                                </label>
+                                {{ form.date_retention }}
+                                {% if form.date_retention.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.date_retention.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.note.id_for_label }}" class="form-label">
+                                <i class="fas fa-sticky-note me-1"></i>
+                                Note
+                            </label>
+                            {{ form.note }}
+                            {% if form.note.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.note.errors.0 }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.comment.id_for_label }}" class="form-label">
+                                <i class="fas fa-comments me-1"></i>
+                                Commentaire
+                            </label>
+                            {{ form.comment }}
+                            {% if form.comment.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.comment.errors.0 }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        {% if user.role == 'teacher' %}
+                        <div class="mb-3">
+                            <div class="form-check">
+                                {{ form.validated }}
+                                <label class="form-check-label" for="{{ form.validated.id_for_label }}">
+                                    <i class="fas fa-check-circle me-1"></i>
+                                    Valider cette progression
+                                </label>
+                            </div>
+                            {% if form.validated.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.validated.errors.0 }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Aide contextuelle -->
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-lightbulb me-2"></i>Conseils :</h6>
+                            <ul class="mb-0">
+                                <li>Remplissez tous les champs obligatoires (*)</li>
+                                <li>La performance doit refléter la qualité de la mémorisation</li>
+                                <li>Ajoutez des commentaires pour le suivi personnalisé</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'inventory:progress-list' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>
+                                Retour
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i>
+                                {% if object %}Modifier{% else %}Enregistrer{% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control, .form-select {
+        border-radius: 0.375rem;
+        border: 1px solid #ced4da;
+        padding: 0.375rem 0.75rem;
+        font-size: 0.875rem;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+    
+    .form-label {
+        font-weight: 500;
+        color: #495057;
+    }
+    
+    .form-text {
+        font-size: 0.875rem;
+    }
+    
+    textarea.form-control {
+        min-height: 100px;
+    }
+</style>
+{% endblock %}

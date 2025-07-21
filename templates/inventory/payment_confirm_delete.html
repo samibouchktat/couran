@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Supprimer le Paiement{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Confirmation de suppression
+                    </h3>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        <i class="fas fa-money-bill-wave fa-4x text-danger mb-3"></i>
+                        <h4 class="text-danger">Êtes-vous sûr de vouloir supprimer ce paiement ?</h4>
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <h5><i class="fas fa-info-circle me-2"></i>Détails du paiement :</h5>
+                        <p class="mb-0">
+                            <strong>Élève :</strong> {{ object.child.user.get_full_name|default:object.child.user.username }}<br>
+                            <strong>Montant :</strong> {{ object.amount|floatformat:2 }} €<br>
+                            <strong>Statut :</strong> 
+                            {% if object.status == 'paid' %}
+                                <span class="badge bg-success">Payé</span>
+                            {% elif object.status == 'pending' %}
+                                <span class="badge bg-warning">En attente</span>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ object.status|default:"Non défini" }}</span>
+                            {% endif %}
+                            <br>
+                            {% if object.date_payment %}
+                                <strong>Date de paiement :</strong> {{ object.date_payment|date:"d/m/Y" }}<br>
+                            {% endif %}
+                            {% if object.due_date %}
+                                <strong>Échéance :</strong> {{ object.due_date|date:"d/m/Y" }}
+                            {% endif %}
+                        </p>
+                    </div>
+                    
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Attention :</strong> Cette action est irréversible. 
+                        Toutes les données de ce paiement seront définitivement supprimées.
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-flex justify-content-center gap-3">
+                            <a href="{% url 'payment-list' %}" class="btn btn-secondary">
+                                <i class="fas fa-times me-1"></i>
+                                Annuler
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash me-1"></i>
+                                Confirmer la suppression
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

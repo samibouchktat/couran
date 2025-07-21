@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    {% if object %}Modifier le Paiement{% else %}Nouveau Paiement{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-money-bill-wave me-2"></i>
+                        {% if object %}
+                            Modifier le Paiement
+                        {% else %}
+                            Nouveau Paiement
+                        {% endif %}
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.child.id_for_label }}" class="form-label">
+                                    <i class="fas fa-user-graduate me-1"></i>
+                                    Élève *
+                                </label>
+                                {{ form.child }}
+                                {% if form.child.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.child.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.amount.id_for_label }}" class="form-label">
+                                    <i class="fas fa-euro-sign me-1"></i>
+                                    Montant (€) *
+                                </label>
+                                {{ form.amount }}
+                                {% if form.amount.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.amount.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.date_payment.id_for_label }}" class="form-label">
+                                    <i class="fas fa-calendar-check me-1"></i>
+                                    Date de paiement
+                                </label>
+                                {{ form.date_payment }}
+                                {% if form.date_payment.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.date_payment.errors.0 }}
+                                </div>
+                                {% endif %}
+                                <small class="form-text text-muted">
+                                    Laissez vide si le paiement n'a pas encore été effectué
+                                </small>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.due_date.id_for_label }}" class="form-label">
+                                    <i class="fas fa-calendar-times me-1"></i>
+                                    Date d'échéance
+                                </label>
+                                {{ form.due_date }}
+                                {% if form.due_date.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.due_date.errors.0 }}
+                                </div>
+                                {% endif %}
+                                <small class="form-text text-muted">
+                                    Date limite pour le paiement
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.status.id_for_label }}" class="form-label">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Statut *
+                                </label>
+                                {{ form.status }}
+                                {% if form.status.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.status.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Aide contextuelle -->
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-lightbulb me-2"></i>Conseils :</h6>
+                            <ul class="mb-0">
+                                <li>Marquez comme "payé" seulement après réception du paiement</li>
+                                <li>Définissez une date d'échéance pour le suivi</li>
+                                <li>Les paiements en retard seront mis en évidence</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'inventory:payment-list' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>
+                                Retour
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i>
+                                {% if object %}Modifier{% else %}Créer{% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control, .form-select {
+        border-radius: 0.375rem;
+        border: 1px solid #ced4da;
+        padding: 0.375rem 0.75rem;
+        font-size: 0.875rem;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+    
+    .form-label {
+        font-weight: 500;
+        color: #495057;
+    }
+    
+    .form-text {
+        font-size: 0.875rem;
+    }
+</style>
+{% endblock %} 

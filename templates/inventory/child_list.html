@@ -1,34 +1,85 @@
 {% extends "base.html" %}
+{% load static %}
+{% block title %}Liste des enfants{% endblock %}
+
 {% block content %}
-  <h1>Liste des enfants</h1>
-  <a href="{% url 'child_add' %}" class="btn btn-primary mb-3">Ajouter un enfant</a>
-  <table class="table">
+<div class="container-fluid mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Liste des enfants</h1>
+    <a href="{% url 'inventory:child-add' %}" class="btn btn-primary">
+      <i class="fas fa-user-plus me-1"></i> Ajouter un enfant
+    </a>
+  </div>
+
+  <table class="table table-striped align-middle">
     <thead>
       <tr>
-        <th>Nom</th>
+        <th>Nom complet</th>
         <th>Parent</th>
-        <th>Classe</th>
+        <th>Groupe</th>
         <th>Niveau arabe</th>
-        <th>Niveau d’apprentissage</th>
+        <th>Apprentissage</th>
         <th>Actions</th>
       </tr>
     </thead>
     <tbody>
       {% for child in children %}
         <tr>
-          <td>{{ child.user.get_full_name }}</td>
-          <td>{{ child.parent.user.get_full_name }}</td>
-          <td>{{ child.classroom.name }}</td>
+          <td>
+            {{ child.user.get_full_name|default:child.user.username }}
+          </td>
+          <td>
+            {{ child.parent.user.get_full_name|default:child.parent.user.username }}
+          </td>
+          <td>
+            {{ child.classroom.name }}
+          </td>
           <td>{{ child.arabic_level }}</td>
           <td>{{ child.learning_level }}</td>
           <td>
-            <a href="{% url 'child_edit' child.pk %}">Modifier</a> |
-            <a href="{% url 'child_delete' child.pk %}">Supprimer</a>
+            <a href="{% url 'child-edit' child.pk %}" class="btn btn-sm btn-warning me-1">
+              <i class="fas fa-edit"></i>
+            </a>
+            <a href="{% url 'child-delete' child.pk %}" class="btn btn-sm btn-danger">
+              <i class="fas fa-trash-alt"></i>
+            </a>
           </td>
         </tr>
       {% empty %}
-        <tr><td colspan="6">Aucun enfant.</td></tr>
+        <tr>
+          <td colspan="6" class="text-center py-3">
+            Aucun enfant trouvé.
+          </td>
+        </tr>
       {% endfor %}
     </tbody>
   </table>
+
+  {# Pagination si configurée dans la vue #}
+  {% if is_paginated %}
+    <nav class="d-flex justify-content-center">
+      <ul class="pagination">
+        {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">&laquo;</a>
+          </li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+        {% endif %}
+        {% for num in paginator.page_range %}
+          <li class="page-item {% if num == page_obj.number %}active{% endif %}">
+            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+          </li>
+        {% endfor %}
+        {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}">&raquo;</a>
+          </li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
+</div>
 {% endblock %}

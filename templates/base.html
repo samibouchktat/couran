@@ -1,4 +1,5 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="fr" data-bs-theme="light" id="mainHtml">
 <head>
@@ -32,12 +33,88 @@
 </head>
 <body class="bg-light">
 
-  <!-- Barre de navigation -->
-  {% block navbar %}
-    {% include 'inventory/navbar.html' %}
-  {% endblock %}
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+    <div class="container-fluid">
+      <!-- Logo / Home publique -->
+      <a class="navbar-brand d-flex align-items-center" href="{% url 'inventory:home' %}">
+        <i class="fa fa-book-reader me-2"></i> Couran
+      </a>
 
+      <button class="navbar-toggler" type="button"
+              data-bs-toggle="collapse" data-bs-target="#mainNav"
+              aria-controls="mainNav" aria-expanded="false"
+              aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
+      <div class="collapse navbar-collapse" id="mainNav">
+        {% if user.is_authenticated %}
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            {% if user.role == 'teacher' %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'inventory:child-list' %}">Enfants</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'inventory:progress-list' %}">Progression</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'inventory:presence-list' %}">Présences</a>
+              </li>
+            {% elif user.role == 'admin' %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'inventory:teacher-list' %}">Professeurs</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'inventory:classroom-list' %}">Groupes</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'inventory:payment-list' %}">Cotisations</a>
+              </li>
+            {% endif %}
+          </ul>
+
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button"
+                 data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa fa-user-circle me-1"></i>{{ user.username }}
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+                <li><a class="dropdown-item" href="#">Mon profil</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <a class="dropdown-item text-danger" href="{% url 'inventory:logout' %}">
+                    <i class="fa fa-sign-out-alt me-1"></i> Déconnexion
+                  </a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        {% else %}
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'inventory:login' %}">Connexion</a>
+            </li>
+          </ul>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+
+  <!-- BOÎTE À ALERTES (messages) -->
+  <div class="container mt-3">
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+
+  <!-- CONTENU PRINCIPAL -->
   <main class="container py-4">
     {% block content %}{% endblock %}
   </main>

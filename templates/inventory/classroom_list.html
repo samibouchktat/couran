@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Liste des Salles de Classe{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-chalkboard-teacher me-2"></i>
+                        Salles de Classe
+                    </h3>
+                    {% if user.role == 'admin' %}
+                    <a href="{% url 'inventory:classroom-add' %}" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i>
+                        Nouvelle Salle
+                    </a>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    {% if classrooms %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Professeur</th>
+                                    <th>Élèves</th>
+                                    <th>Capacité</th>
+                                    <th>Date de création</th>
+                                    {% if user.role == 'admin' %}
+                                    <th>Actions</th>
+                                    {% endif %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for classroom in classrooms %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ classroom.name }}</strong>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">
+                                            {{ classroom.teacher.user.get_full_name|default:classroom.teacher.user.username }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">
+                                            {{ classroom.children.count }} / {{ classroom.max_children }}
+                                        </span>
+                                    </td>
+                                    <td>{{ classroom.max_children }}</td>
+                                    <td>{{ classroom.date_created|date:"d/m/Y" }}</td>
+                                    {% if user.role == 'admin' %}
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{% url 'inventory:classroom-edit' classroom.pk %}" 
+                                               class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="{% url 'inventory:classroom-delete' classroom.pk %}" 
+                                               class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                    {% endif %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-chalkboard-teacher fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">Aucune salle de classe trouvée</h5>
+                        {% if user.role == 'admin' %}
+                        <p class="text-muted">Commencez par créer votre première salle de classe</p>
+                        <a href="{% url 'classroom-add' %}" class="btn btn-primary">
+                            <i class="fas fa-plus me-1"></i>
+                            Créer une salle
+                        </a>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

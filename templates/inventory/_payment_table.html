@@ -1,0 +1,74 @@
+{# Ce fragment ne contient que le <table>…</table> #}
+<table class="table table-hover align-middle">
+  <thead class="table-dark">
+    <tr>
+      <th>Élève</th>
+      <th>Montant</th>
+      <th>Paiement</th>
+      <th>Échéance</th>
+      <th>Statut</th>
+      <th class="text-end">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for payment in payments %}
+      <tr class="
+        {% if payment.status == 'pending' and payment.due_date < today %}table-danger
+        {% elif payment.status == 'pending' %}table-warning{% endif %}
+      ">
+        <td>
+          <strong>{{ payment.child.user.get_full_name|default:payment.child.user.username }}</strong><br>
+          <small class="text-muted">{{ payment.child.classroom.name }}</small>
+        </td>
+        <td><span class="badge bg-primary">{{ payment.amount|floatformat:2 }} dh</span></td>
+        <td>
+          {% if payment.date_payment %}
+            <span class="text-success">
+              <i class="fas fa-check-circle me-1"></i>{{ payment.date_payment|date:"d/m/Y" }}
+            </span>
+          {% else %}
+            <span class="text-muted">
+              <i class="fas fa-clock me-1"></i>Non payé
+            </span>
+          {% endif %}
+        </td>
+        <td>
+          {% if payment.due_date %}
+            {% if payment.status == 'pending' and payment.due_date < today %}
+              <span class="text-danger">
+            {% elif payment.due_date < today %}
+              <span class="text-warning">
+            {% else %}
+              <span class="text-success">
+            {% endif %}
+              <i class="fas fa-calendar me-1"></i>{{ payment.due_date|date:"d/m/Y" }}
+            </span>
+          {% else %}
+            <span class="text-muted">Non définie</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if payment.status == 'paid' %}
+            <span class="badge bg-success"><i class="fas fa-check me-1"></i>Payé</span>
+          {% elif payment.status == 'pending' %}
+            {% if payment.due_date and payment.due_date < today %}
+              <span class="badge bg-danger"><i class="fas fa-exclamation-triangle me-1"></i>En retard</span>
+            {% else %}
+              <span class="badge bg-warning"><i class="fas fa-clock me-1"></i>En attente</span>
+            {% endif %}
+          {% else %}
+            <span class="badge bg-secondary"><i class="fas fa-question me-1"></i>{{ payment.status|default:"Inconnu" }}</span>
+          {% endif %}
+        </td>
+        <td class="text-end">
+          <div class="btn-group">
+            <a href="{% url 'inventory:payment-edit' payment.pk %}" class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></a>
+            <a href="{% url 'inventory:payment-delete' payment.pk %}" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></a>
+          </div>
+        </td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="6" class="text-center py-3">Aucun paiement trouvé</td></tr>
+    {% endfor %}
+  </tbody>
+</table>

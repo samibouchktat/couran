@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Liste des Paiements{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3><i class="fas fa-money-bill-wave me-2"></i>Paiements</h3>
+    <div class="d-flex">
+      <input
+        id="payment-search"
+        type="text"
+        name="q"
+        value="{{ request.GET.q|default:'' }}"
+        class="form-control me-2"
+        placeholder="Rechercher un élève…"
+      >
+      <button id="payment-search-btn" class="btn btn-outline-primary">
+        <i class="fas fa-search"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="btn-group mb-3">
+    <a href="{% url 'inventory:payment-add' %}" class="btn btn-primary">
+      <i class="fas fa-plus me-1"></i>Nouveau paiement
+    </a>
+    <a href="{% url 'inventory:payment-export' %}" class="btn btn-success">
+      <i class="fas fa-download me-1"></i>Exporter CSV
+    </a>
+    <a href="{% url 'inventory:payment-export' %}?filter=late" class="btn btn-warning">
+      <i class="fas fa-exclamation-triangle me-1"></i>Retards CSV
+    </a>
+  </div>
+
+  {# Conteneur dynamique du tableau #}
+  <div id="payment-table-container">
+    {% include "inventory/_payment_table.html" %}
+  </div>
+
+  {# Statistiques #}
+  <div class="row g-4 mt-5">
+    <div class="col-md-3">
+      <div class="card bg-primary text-white text-center">
+        <div class="card-body">
+          <h5><i class="fas fa-money-bill me-2"></i>Total</h5>
+          <h3>{{ total_payments }}</h3>
+          <small>Paiements</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-success text-white text-center">
+        <div class="card-body">
+          <h5><i class="fas fa-check me-2"></i>Payés</h5>
+          <h3>{{ paid_count }}</h3>
+          <small>Paiements</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-warning text-white text-center">
+        <div class="card-body">
+          <h5><i class="fas fa-clock me-2"></i>En attente</h5>
+          <h3>{{ pending_count }}</h3>
+          <small>Paiements</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-danger text-white text-center">
+        <div class="card-body">
+          <h5><i class="fas fa-exclamation-triangle me-2"></i>En retard</h5>
+          <h3>{{ late_count }}</h3>
+          <small>Paiements</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// debounce pour limiter les requêtes
+function debounce(fn, wait=300) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), wait);
+  };
+}
+
+// requête AJAX pour récupérer le fragment de tableau
+function fetchPayments(query) {
+  const url = new URL(window.location.href);
+  url.searchParams.set('q', query);
+  fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+    .then(r => r.json())
+    .then(data => {
+      document.getElementById('payment-table-container').innerHTML = data.table_html;
+    })
+    .catch(console.error);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const input = document.getElementById('payment-search');
+  const btn   = document.getElementById('payment-search-btn');
+  const debounced = debounce(() => fetchPayments(input.value));
+
+  input.addEventListener('input', debounced);
+  btn.addEventListener('click', () => fetchPayments(input.value));
+});
+</script>
+{% endblock %}
