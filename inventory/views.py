@@ -5,14 +5,14 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden, HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.urls import reverse_lazy
 from django.utils import timezone
 import csv
 from django.db.models import Avg,F, ExpressionWrapper, DateField
 from django.db.models.functions import Now
 from .models import Classroom, Progress, Payment, Presence, CustomUser, Teacher, Child
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm ,PresenceForm,ProgressForm
 from django.db.models import Q
 from django.http import JsonResponse
 from django.template.loader import render_to_string
@@ -157,29 +157,32 @@ class TeacherListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     def get_queryset(self):
         return CustomUser.objects.filter(role='teacher')
 
+
 class TeacherCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
-    model = CustomUser
-    template_name = 'inventory/teacher_form.html'
-    fields = ['username', 'first_name', 'last_name', 'email', 'school']
-    success_url = reverse_lazy('teacher-list')
+     model = CustomUser
+     template_name = 'inventory/teacher_form.html'
+     fields = ['username', 'first_name', 'last_name', 'email', 'school']
+     success_url = reverse_lazy('inventory:teacher-list')
 
-    def test_func(self):
-        return self.request.user.role == 'admin'
+     def test_func(self):
+         return self.request.user.role == 'admin'
 
-def form_valid(self, form):
-    user = form.save(commit=False)
-    user.set_password('changeme')
-    user.role = 'teacher'
-    user.save()
+     def form_valid(self, form):
+         # 1) on crée l’utilisateur
+         user = form.save(commit=False)
+         user.set_password('changeme')
+         user.role = 'teacher'
+         user.save()
+         # 2) on crée le profil métier Teacher
+         Teacher.objects.create(user=user)
+         return super().form_valid(form)
 
-    Teacher.objects.create(user=user)
-    return super().form_valid(form)
 
 class TeacherUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = CustomUser
     template_name = 'inventory/teacher_form.html'
     fields = ['first_name', 'last_name', 'email', 'school']
-    success_url = reverse_lazy('teacher-list')
+    success_url = reverse_lazy('inventory:teacher-list')
 
     def test_func(self):
         return self.request.user.role == 'admin'
@@ -187,7 +190,7 @@ class TeacherUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 class TeacherDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = CustomUser
     template_name = 'inventory/teacher_confirm_delete.html'
-    success_url = reverse_lazy('teacher-list')
+    success_url = reverse_lazy('inventory:teacher-list')
 
     def test_func(self):
         return self.request.user.role == 'admin'
@@ -210,7 +213,7 @@ class ClassroomCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Classroom
     template_name = 'inventory/classroom_form.html'
     fields = ['name', 'teacher', 'max_children', 'date_created']
-    success_url = reverse_lazy('classroom-list')
+    success_url = reverse_lazy('inventory:classroom-list')
 
     def test_func(self):
         return self.request.user.role == 'admin'
@@ -219,7 +222,7 @@ class ClassroomUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Classroom
     template_name = 'inventory/classroom_form.html'
     fields = ['name', 'teacher', 'max_children', 'date_created']
-    success_url = reverse_lazy('classroom-list')
+    success_url = reverse_lazy('inventory:classroom-list')
 
     def test_func(self):
         return self.request.user.role == 'admin'
@@ -227,10 +230,16 @@ class ClassroomUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 class ClassroomDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Classroom
     template_name = 'inventory/classroom_confirm_delete.html'
-    success_url = reverse_lazy('classroom-list')
+    success_url = reverse_lazy('inventory:classroom-list')
 
     def test_func(self):
         return self.request.user.role == 'admin'
+class ClassroomDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+    model = Classroom
+    template_name = 'inventory/classroom_detail.html'
+    context_object_name = 'classroom'
+    def test_func(self):
+        return self.request.user.role in ['admin', 'teacher']
 
 # ——————— CRUD Enfants (Child) ———————
 class ChildListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
@@ -248,24 +257,33 @@ class ChildCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Child
     template_name = 'inventory/child_form.html'
     fields = ['user', 'classroom', 'parent', 'arabic_level', 'learning_level']
-    success_url = reverse_lazy('child-list')
+    success_url = reverse_lazy('inventory:child-list')
 
     def test_func(self):
         return self.request.user.role == 'teacher'
+
+    def get_form(self, *args, **kwargs):
+        form = super().get_form(*args, **kwargs)
+        # Ne proposer que les classes que ce prof enseigne
+        form.fields['classroom'].queryset = Classroom.objects.filter(
+            teacher__user=self.request.user
+        )
+        return form
+
 
 class ChildUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Child
     template_name = 'inventory/child_form.html'
     fields = ['classroom', 'parent', 'arabic_level', 'learning_level']
-    success_url = reverse_lazy('child-list')
+    success_url = reverse_lazy('inventory:child-list')
 
     def test_func(self):
         return self.request.user.role == 'teacher'
 
 class ChildDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Child
-    template_name = 'child_confirm_delete.html'
-    success_url = reverse_lazy('child-list')
+    template_name = 'inventory/child_confirm_delete.html'
+    success_url = reverse_lazy('inventory:child-list')
 
     def test_func(self):
         return self.request.user.role == 'teacher'
@@ -285,33 +303,53 @@ class ProgressListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         return Progress.objects.filter(child__classroom__teacher__user=self.request.user)
 
 class ProgressCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
-    model = Progress
+    model         = Progress
+    form_class    = ProgressForm
     template_name = 'inventory/progress_form.html'
-    fields = ['child', 'surah', 'verse', 'hizb', 'chapter', 'note', 'comment', 'performance', 'date_retention']
-    success_url = reverse_lazy('progress-list')
+    success_url   = reverse_lazy('inventory:progress-list')
 
     def test_func(self):
         return self.request.user.role == 'teacher'
 
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        # ne proposer que les enfants du prof connecté
+        form.fields['child'].queryset = Child.objects.filter(
+            classroom__teacher__user=self.request.user
+        )
+        # optionnel : préremplir date_retention à aujourd’hui si vide
+        if not form.initial.get('date_retention'):
+            form.initial['date_retention'] = timezone.localdate()
+        return form
+
     def form_valid(self, form):
-        prog = form.save(commit=False)
-        prog.validated = False
-        prog.save()
+        # forcer validated à False au début
+        form.instance.validated = False
         return super().form_valid(form)
 
 class ProgressUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    model = Progress
-    template_name = 'progress_form.html'
-    fields = ['validated']
-    success_url = reverse_lazy('progress-list')
+    model         = Progress
+    form_class    = ProgressForm
+    template_name = 'inventory/progress_form.html'
+    success_url   = reverse_lazy('inventory:progress-list')
 
     def test_func(self):
-        return self.request.user.role == 'teacher'
+        return self.request.user.role in ['teacher', 'admin']
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        # idem, restreindre le choix d'enfant
+        form.fields['child'].queryset = Child.objects.filter(
+            classroom__teacher__user=self.request.user
+        )
+        # si déjà validé et admin, on peut garder coché
+        return form
 
     def form_valid(self, form):
         prog = form.save(commit=False)
-        if prog.validated:
-            prog.validated_by = get_object_or_404(Teacher, user=self.request.user)
+        if prog.validated and not prog.validated_by:
+            from .models import Teacher
+            prog.validated_by = Teacher.objects.get(user=self.request.user)
         prog.save()
         return super().form_valid(form)
 
@@ -371,7 +409,7 @@ class PaymentCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Payment
     template_name = 'inventory/payment_form.html'
     fields = ['child', 'amount', 'date_payment', 'due_date', 'status']
-    success_url = reverse_lazy('payment-list')
+    success_url = reverse_lazy('inventory:payment-list')
 
     def test_func(self):
         return self.request.user.role == 'admin'
@@ -380,7 +418,7 @@ class PaymentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Payment
     template_name = 'inventory/payment_form.html'
     fields = ['amount', 'date_payment', 'due_date', 'status']
-    success_url = reverse_lazy('payment-list')
+    success_url = reverse_lazy('inventory:payment-list')
 
     def test_func(self):
         return self.request.user.role == 'admin'
@@ -388,7 +426,7 @@ class PaymentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 class PaymentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Payment
     template_name = 'inventory/payment_confirm_delete.html'
-    success_url = reverse_lazy('payment-list')
+    success_url = reverse_lazy('inventory:payment-list')
 
     def test_func(self):
         return self.request.user.role == 'admin'
@@ -404,25 +442,39 @@ class PresenceListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
     def get_queryset(self):
         today = timezone.localdate()
-        return Presence.objects.filter(
-            date=today,
-            child__classroom__teacher__user=self.request.user
-        )
+        return (Presence.objects
+                .filter(date=today,
+                        child__classroom__teacher__user=self.request.user)
+                .select_related('child__user'))
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # Ajout de today pour le template
-        context['today'] = timezone.localdate()
-        return context
+        ctx = super().get_context_data(**kwargs)
+        ctx['today'] = timezone.localdate()
+        return ctx
+
 
 class PresenceCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Presence
-    template_name = 'presence_form.html'
-    fields = ['child', 'date', 'present']
-    success_url = reverse_lazy('presence-list')
+    form_class = PresenceForm
+    template_name = 'inventory/presence_form.html'
+    success_url = reverse_lazy('inventory:presence-list')
 
     def test_func(self):
         return self.request.user.role == 'teacher'
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        # Ne proposer que les enfants de ce prof
+        form.fields['child'].queryset = Child.objects.filter(
+            classroom__teacher__user=self.request.user
+        )
+        return form
+
+    def form_valid(self, form):
+        # Si vous voulez forcer la date à aujourd'hui par défaut :
+        if not form.cleaned_data.get('date'):
+            form.instance.date = timezone.localdate()
+        return super().form_valid(form)
 
 @teacher_required
 def export_presence_month(request, year, month):

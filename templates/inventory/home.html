@@ -312,152 +312,91 @@
 
 {% block content %}
 <div class="bg-landing">
-  <!-- HEADER FLOTTANT -->
-  <div class="header-floating fade-in">
-    <div class="container">
-      <div class="header-logo">
-        <i class="fas fa-book-open"></i> Couran
-      </div>
-      <div class="header-csrf">
-        {% csrf_token %}
-                <a href="/login/" class="btn btn-login">Connexion</a>
-        <a href="/aide/" class="btn btn-help">Aide</a>
-      </div>
-    </div>
-  </div>
-  <div class="bg-blobs">
-    <div class="blob blob1"></div>
-    <div class="blob blob2"></div>
-    <div class="blob blob3"></div>
-    <div class="blob blob4"></div>
-  </div>
   <div class="container py-4 content-landing">
     <!-- HERO PUBLIC -->
     <section class="hero-landing mb-5 position-relative fade-in">
-      <div class="bismillah">بِسْمِ ٱللَّٰهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</div>
-      <h1 class="hero-title">Découvre, comprends et mémorise le Coran<br><span style="font-size:1.5rem; font-weight:400;">pour illuminer ta vie</span></h1>
-      <p class="hero-subtitle">Une plateforme moderne et accessible à tous pour apprendre le Saint Coran, progresser à son rythme et vivre une expérience spirituelle unique.</p>
-      <a href="/login/" class="btn btn-gold btn-lg">Commencer l’aventure</a>
+      <h1 class="hero-title">Bienvenue sur Sun Square – Plateforme d’apprentissage du Coran</h1>
+      <a href="/login/" class="btn btn-login-home">Connexion</a>
     </section>
 
     <!-- POURQUOI APPRENDRE LE CORAN -->
-    <section class="bg-section mb-5 fade-in">
+    <section class="mb-5 fade-in">
       <h2 class="section-title">Pourquoi apprendre le Coran&nbsp;?</h2>
       <div class="row justify-content-center text-center">
         <div class="col-md-4 mb-4">
           <div class="feature-card">
-            <div class="icon"><i class="fas fa-heart"></i></div>
-            <div class="feature-title">Spiritualité & paix intérieure</div>
-            <div class="feature-text">Le Coran apaise le cœur, renforce la foi et guide vers la sérénité au quotidien.</div>
+            <div class="icon"><i class="fas fa-hands-helping"></i></div>
+            <div class="feature-title">Transmettre un héritage spirituel</div>
+            <div class="feature-text">
+              Guider la nouvelle génération dans la mémorisation et la compréhension du Coran, avec des outils adaptés aux enseignants.
+            </div>
           </div>
         </div>
         <div class="col-md-4 mb-4">
           <div class="feature-card">
-            <div class="icon"><i class="fas fa-lightbulb"></i></div>
-            <div class="feature-title">Compréhension & sagesse</div>
-            <div class="feature-text">Découvre les enseignements profonds et universels du Livre sacré, pour tous les âges.</div>
+            <div class="icon"><i class="fas fa-user-graduate"></i></div>
+            <div class="feature-title">Accompagner chaque élève</div>
+            <div class="feature-text">
+              Suivi personnalisé, valorisation des efforts, encouragement de la réussite pour chaque enfant.
+            </div>
           </div>
         </div>
         <div class="col-md-4 mb-4">
           <div class="feature-card">
             <div class="icon"><i class="fas fa-users"></i></div>
-            <div class="feature-title">Communauté & transmission</div>
-            <div class="feature-text">Partage, échange et transmets la lumière du Coran à tes proches et à la nouvelle génération.</div>
+            <div class="feature-title">Créer une communauté éducative</div>
+            <div class="feature-text">
+              Collaboration entre professeurs, administrateurs et parents pour un apprentissage collectif et bienveillant.
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- FONCTIONNALITÉS -->
+    <!-- FONCTIONNALITÉS CLÉS POUR PROFESSEURS & ADMIN -->
     <section class="mb-5 fade-in">
       <h2 class="section-title">Fonctionnalités clés</h2>
       <div class="row justify-content-center text-center">
-        <div class="col-6 col-md-4 col-lg-2">
+        <div class="col-12 col-md-6 col-lg-4 mb-4">
           <div class="feature-card">
-            <div class="icon"><i class="fas fa-headphones-alt"></i></div>
-            <div class="feature-title">Audio & récitation</div>
-            <div class="feature-text">Écoute et répète chaque verset avec des récitateurs renommés.</div>
+            <div class="icon"><i class="fas fa-users-cog"></i></div>
+            <div class="feature-title">Gestion des groupes & élèves</div>
+            <div class="feature-text">Créez, modifiez et organisez facilement vos groupes et vos élèves.</div>
           </div>
         </div>
-        <div class="col-6 col-md-4 col-lg-2">
+        <div class="col-12 col-md-6 col-lg-4 mb-4">
           <div class="feature-card">
-            <div class="icon"><i class="fas fa-brain"></i></div>
-            <div class="feature-title">Mémorisation guidée</div>
-            <div class="feature-text">Méthodes progressives et outils de révision interactifs.</div>
+            <div class="icon"><i class="fas fa-chart-line"></i></div>
+            <div class="feature-title">Suivi de la progression</div>
+            <div class="feature-text">Visualisez la mémorisation des sourates et versets, validez les progrès et encouragez la réussite.</div>
           </div>
         </div>
-        <div class="col-6 col-md-4 col-lg-2">
+        <div class="col-12 col-md-6 col-lg-4 mb-4">
           <div class="feature-card">
-            <div class="icon"><i class="fas fa-user-friends"></i></div>
-            <div class="feature-title">Accompagnement humain</div>
-            <div class="feature-text">Coachs, enseignants et communauté bienveillante.</div>
+            <div class="icon"><i class="fas fa-calendar-check"></i></div>
+            <div class="feature-title">Gestion des présences</div>
+            <div class="feature-text">Saisissez les présences/absences en un clic et exportez les feuilles de présence mensuelles.</div>
           </div>
         </div>
-        <div class="col-6 col-md-4 col-lg-2">
+        <div class="col-12 col-md-6 col-lg-4 mb-4">
           <div class="feature-card">
-            <div class="icon"><i class="fas fa-award"></i></div>
-            <div class="feature-title">Suivi & motivation</div>
-            <div class="feature-text">Badges, défis, progression visuelle et rappels personnalisés.</div>
+            <div class="icon"><i class="fas fa-file-invoice-dollar"></i></div>
+            <div class="feature-title">Gestion des cotisations</div>
+            <div class="feature-text">Suivez les paiements, recevez des alertes en cas de retard et exportez les historiques de cotisations.</div>
           </div>
         </div>
-        <div class="col-6 col-md-4 col-lg-2">
+        <div class="col-12 col-md-6 col-lg-4 mb-4">
           <div class="feature-card">
-            <div class="icon"><i class="fas fa-mobile-alt"></i></div>
-            <div class="feature-title">Accessible partout</div>
-            <div class="feature-text">Sur mobile, tablette et ordinateur, 24h/24.</div>
+            <div class="icon"><i class="fas fa-tachometer-alt"></i></div>
+            <div class="feature-title">Tableaux de bord & statistiques</div>
+            <div class="feature-text">Accédez à des indicateurs clairs : élèves, groupes, mémorisation, retards, présences.</div>
           </div>
         </div>
-      </div>
-    </section>
-
-    <!-- COMMENT ÇA MARCHE -->
-    <section class="bg-section mb-5 fade-in">
-      <h2 class="section-title">Comment ça marche&nbsp;?</h2>
-      <div class="row text-center justify-content-center">
-        <div class="col-md-4 mb-4">
-          <div class="step-card">
-            <div class="mb-3"><i class="fas fa-user-plus fa-2x text-gold"></i></div>
-            <h5>1. Inscription simple</h5>
-            <p>Crée ton compte en quelques clics et accède à ton espace personnel.</p>
-          </div>
-        </div>
-        <div class="col-md-4 mb-4">
-          <div class="step-card">
-            <div class="mb-3"><i class="fas fa-book-reader fa-2x text-gold"></i></div>
-            <h5>2. Choisis ton parcours</h5>
-            <p>Sélectionne ton niveau, tes objectifs et commence à apprendre à ton rythme.</p>
-          </div>
-        </div>
-        <div class="col-md-4 mb-4">
-          <div class="step-card">
-            <div class="mb-3"><i class="fas fa-star fa-2x text-gold"></i></div>
-            <h5>3. Pratique & progresse</h5>
-            <p>Récite, révise, teste-toi et suis ta progression jour après jour.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- TÉMOIGNAGES -->
-    <section class="mb-5 fade-in">
-      <h2 class="section-title">Ils ont transformé leur apprentissage</h2>
-      <div class="row justify-content-center">
-        <div class="col-md-4 mb-4">
-          <div class="testimonial-card d-flex align-items-start">
-            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Témoin 1" class="avatar">
-            <div>
-              <strong>Ahmed B.</strong><br><span class="text-muted small">Parent</span>
-              <p class="mb-0 mt-2">“Une plateforme qui a redonné goût à la mémorisation du Coran à mon fils. L’accompagnement est exceptionnel !”</p>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4 mb-4">
-          <div class="testimonial-card d-flex align-items-start">
-            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Témoin 2" class="avatar">
-            <div>
-              <strong>Fatima Z.</strong><br><span class="text-muted small">Étudiante</span>
-              <p class="mb-0 mt-2">“J’ai progressé plus vite que jamais grâce aux outils interactifs et à la motivation de la communauté.”</p>
-            </div>
+        <div class="col-12 col-md-6 col-lg-4 mb-4">
+          <div class="feature-card">
+            <div class="icon"><i class="fas fa-comments"></i></div>
+            <div class="feature-title">Communication</div>
+            <div class="feature-text">(À venir) Contactez facilement les parents en cas de besoin.</div>
           </div>
         </div>
       </div>

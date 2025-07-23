@@ -1,3 +1,4 @@
+{# templates/inventory/presence_list.html #}
 {% extends "base.html" %}
 {% block title %}Présences du jour{% endblock %}
 
@@ -5,46 +6,43 @@
 <div class="container mt-4">
   <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
-      <h3 class="card-title mb-0">
-        <i class="fas fa-calendar-check me-2"></i>
-        Présences – {{ today|date:"d/m/Y" }}
-      </h3>
-      <div class="btn-group">
+      <h3><i class="fas fa-calendar-check me-2"></i>Présences – {{ today|date:"d/m/Y" }}</h3>
+      <div>
         <a href="{% url 'inventory:presence-add' %}" class="btn btn-primary">
-          <i class="fas fa-plus me-1"></i> Nouvelle Présence
+          <i class="fas fa-plus me-1"></i>Nouvelle Présence
         </a>
         <a href="{% url 'inventory:presence-export' year=today.year month=today.month %}"
            class="btn btn-success">
-          <i class="fas fa-download me-1"></i> Exporter CSV
+          <i class="fas fa-download me-1"></i>Exporter CSV
         </a>
       </div>
     </div>
     <div class="card-body">
       {% if presences %}
-        <div class="table-responsive">
-          <table class="table table-hover">
-            <thead class="table-dark">
+        <table class="table table-hover">
+          <thead class="table-dark">
+            <tr>
+              <th>Élève</th>
+              <th>Date</th>
+              <th>Présent</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in presences %}
               <tr>
-                <th>Élève</th><th>Date</th><th>Présent</th>
+                <td>{{ p.child.user.get_full_name|default:p.child.user.username }}</td>
+                <td>{{ p.date|date:"d/m/Y" }}</td>
+                <td>
+                  {% if p.present %}
+                    <span class="badge bg-success">Oui</span>
+                  {% else %}
+                    <span class="badge bg-danger">Non</span>
+                  {% endif %}
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {% for p in presences %}
-                <tr>
-                  <td>{{ p.child.user.get_full_name|default:p.child.user.username }}</td>
-                  <td>{{ p.date|date:"d/m/Y" }}</td>
-                  <td>
-                    {% if p.present %}
-                      <span class="badge bg-success">Oui</span>
-                    {% else %}
-                      <span class="badge bg-danger">Non</span>
-                    {% endif %}
-                  </td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
+            {% endfor %}
+          </tbody>
+        </table>
       {% else %}
         <p class="text-center py-4">Aucune présence enregistrée pour aujourd'hui.</p>
       {% endif %}

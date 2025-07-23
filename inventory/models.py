@@ -2,6 +2,9 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.utils import timezone
 from django.conf import settings
+from django.contrib.auth import get_user_model
+
+
 
 class School(models.Model):
     id = models.BigAutoField(primary_key=True)
@@ -134,12 +137,26 @@ class Progress(models.Model):
 
 
 class Payment(models.Model):
+    PENDING = 'pending'
+    PAID    = 'paid'
+
+    STATUS_CHOICES = [
+        (PENDING, 'En attente'),
+        (PAID,    'Payé'),
+    ]
     id = models.BigAutoField(primary_key=True)
     child = models.ForeignKey(Child, on_delete=models.CASCADE, blank=True, null=True)
     amount = models.FloatField()
     date_payment = models.DateField(blank=True, null=True)
     due_date = models.DateField(blank=True, null=True)
-    status = models.CharField(max_length=50, blank=True, null=True)
+    status = models.CharField(
+        max_length=10,
+        choices=STATUS_CHOICES,
+        default=PENDING,
+        blank=False,
+        null=False,
+        help_text="Statut du paiement"
+    )
     uuid = models.CharField(max_length=255, unique=True, blank=True, null=True)
 
     class Meta:

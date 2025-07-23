@@ -27,6 +27,7 @@ urlpatterns = [
     path('classrooms/add/', views.ClassroomCreateView.as_view(), name='classroom-add'),
     path('classrooms/<int:pk>/edit/', views.ClassroomUpdateView.as_view(), name='classroom-edit'),
     path('classrooms/<int:pk>/delete/', views.ClassroomDeleteView.as_view(), name='classroom-delete'),
+    path('classrooms/<int:pk>/', views.ClassroomDetailView.as_view(), name='classroom-detail'),
 
     # CRUD Enfants
     path('children/', views.ChildListView.as_view(), name='child-list'),

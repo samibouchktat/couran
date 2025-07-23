@@ -57,17 +57,17 @@
           </td>
           <td>
             {% if not prog.validated and user.role == 'teacher' %}
-              <a href="{% url 'progress-edit' prog.pk %}"
+              <a href="{% url 'inventory:progress-edit' prog.pk %}"
                  class="btn btn-sm btn-success">
                 Valider
               </a>
             {% endif %}
             {% if user.role == 'admin' %}
-              <a href="{% url 'progress-edit' prog.pk %}"
+              <a href="{% url 'inventory:progress-edit' prog.pk %}"
                  class="btn btn-sm btn-warning">
                 Modifier
               </a>
-              <a href="{% url 'progress-delete' prog.pk %}"
+              <a href="{% url 'inventory:progress-delete' prog.pk %}"
                  class="btn btn-sm btn-danger">
                 Supprimer
               </a>

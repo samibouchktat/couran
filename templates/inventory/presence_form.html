@@ -1,0 +1,52 @@
+{# templates/inventory/presence_form.html #}
+{% extends "base.html" %}
+{% block title %}Nouvelle présence{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="card mx-auto" style="max-width:600px;">
+    <div class="card-header bg-primary text-white">
+      <h5><i class="fas fa-user-check me-2"></i>Enregistrer une présence</h5>
+    </div>
+    <div class="card-body">
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <div class="mb-3">
+          {{ form.child.label_tag }}
+          {{ form.child }}
+          {% for err in form.child.errors %}
+            <div class="text-danger small">{{ err }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="mb-3">
+          {{ form.date.label_tag }}
+          {{ form.date }}
+          {% for err in form.date.errors %}
+            <div class="text-danger small">{{ err }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="mb-3">
+          {{ form.present.label_tag }}
+          {{ form.present }}
+          {% for err in form.present.errors %}
+            <div class="text-danger small">{{ err }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="d-flex justify-content-between">
+          <a href="{% url 'inventory:presence-list' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Annuler
+          </a>
+          <button type="submit" class="btn btn-success">
+            <i class="fas fa-save me-1"></i>Enregistrer
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

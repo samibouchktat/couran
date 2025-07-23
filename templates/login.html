@@ -1,23 +1,289 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block extra_css %}
+<style>
+  body {
+    background: #f7fafc;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+  .bg-blobs-login {
+    position: fixed;
+    z-index: 0;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .blob-login {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(32px);
+    opacity: 0.45;
+    animation: moveBlobLogin 18s ease-in-out infinite alternate;
+  }
+  .blob1-login {
+    width: 520px; height: 420px;
+    background: radial-gradient(circle at 30% 40%, #D4AF37 0%, #fff 80%);
+    top: -120px; left: -180px;
+    animation-delay: 0s;
+  }
+  .blob2-login {
+    width: 400px; height: 340px;
+    background: radial-gradient(circle at 70% 60%, #0a1931 0%, #232526 80%);
+    top: 60vh; left: 60vw;
+    animation-delay: 2s;
+  }
+  .blob3-login {
+    width: 350px; height: 300px;
+    background: radial-gradient(circle at 60% 40%, #3bb77e 0%, #fff 80%);
+    top: 70vh; left: -120px;
+    animation-delay: 4s;
+  }
+  .blob4-login {
+    width: 300px; height: 250px;
+    background: radial-gradient(circle at 40% 60%, #bdbdbd 0%, #fff 80%);
+    top: 10vh; left: 70vw;
+    animation-delay: 6s;
+  }
+  @keyframes moveBlobLogin {
+    0% { transform: scale(1) translateY(0) translateX(0); }
+    50% { transform: scale(1.15) translateY(-30px) translateX(40px); }
+    100% { transform: scale(1) translateY(0) translateX(0); }
+  }
+  .login-container {
+    min-height: 90vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+  }
+  .login-card {
+    background: #fff;
+    border-radius: 2.5rem 1.5rem 2.5rem 1.5rem;
+    box-shadow: 0 8px 32px rgba(24,24,24,0.13);
+    padding: 2.5rem 2rem 2rem 2rem;
+    max-width: 400px;
+    width: 100%;
+    margin: 2rem auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: box-shadow .2s, transform .2s;
+  }
+  .login-card:hover {
+    box-shadow: 0 16px 48px rgba(212,175,55,0.18);
+    transform: translateY(-4px) scale(1.02);
+  }
+  .login-card.shake {
+    animation: shake 0.3s;
+  }
+  @keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+  }
+  .login-logo {
+    max-width: 110px;
+    width: 100%;
+    margin-bottom: 1.2rem;
+    display: block;
+    filter: drop-shadow(0 2px 12px rgba(212,175,55,0.10));
+  }
+  .login-title {
+    font-weight: 900;
+    font-size: 2rem;
+    color: #181818;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    letter-spacing: -1px;
+  }
+  .form-label {
+    font-weight: 600;
+    color: #232526;
+  }
+  .input-group {
+    position: relative;
+    margin-bottom: 1.2rem;
+  }
+  .input-group .input-icon {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #D4AF37;
+    font-size: 1.1rem;
+    z-index: 2;
+  }
+  .input-group input {
+    padding-left: 2.3rem;
+  }
+  .input-group .toggle-password {
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #bdbdbd;
+    font-size: 1.1rem;
+    cursor: pointer;
+    z-index: 2;
+    transition: color .2s;
+  }
+  .input-group .toggle-password.active {
+    color: #3bb77e;
+  }
+  .form-control {
+    border-radius: 2rem;
+    padding: .7rem 1.2rem;
+    font-size: 1.1rem;
+    border: 1.5px solid #D4AF37;
+    background: #f7fafc;
+    color: #181818;
+    margin-bottom: 0;
+    transition: border .2s, box-shadow .2s;
+    box-shadow: none;
+  }
+  .form-control:focus {
+    border-color: #3bb77e;
+    box-shadow: 0 0 0 2px #3bb77e33;
+    background: #fff;
+  }
+  .btn-login {
+    width: 100%;
+    border-radius: 2rem;
+    font-weight: 700;
+    font-size: 1.1rem;
+    background: linear-gradient(90deg, #D4AF37 60%, #3bb77e 100%);
+    color: #181818;
+    border: none;
+    box-shadow: 0 2px 8px rgba(212,175,55,0.08);
+    transition: background .2s, color .2s, box-shadow .2s, transform .1s;
+    margin-top: .5rem;
+  }
+  .btn-login:active {
+    transform: scale(0.97);
+    box-shadow: 0 1px 4px rgba(212,175,55,0.10);
+  }
+  .btn-login:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  .login-footer {
+    margin-top: 1.5rem;
+    text-align: center;
+    color: #888;
+    font-size: .97rem;
+  }
+  .login-links {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: .5rem;
+    font-size: .97rem;
+  }
+  .login-links a {
+    color: #3bb77e;
+    text-decoration: none;
+    transition: color .2s;
+  }
+  .login-links a:hover {
+    color: #D4AF37;
+    text-decoration: underline;
+  }
+  @media (max-width: 600px) {
+    .login-card { padding: 1.5rem 0.5rem; }
+    .login-title { font-size: 1.3rem; }
+    .login-links { flex-direction: column; gap: 0.5rem; }
+  }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function togglePassword() {
+  const pwd = document.getElementById('id_password');
+  const eye = document.getElementById('togglePwd');
+  if (pwd.type === 'password') {
+    pwd.type = 'text';
+    eye.classList.add('active');
+    eye.classList.remove('fa-eye');
+    eye.classList.add('fa-eye-slash');
+  } else {
+    pwd.type = 'password';
+    eye.classList.remove('active');
+    eye.classList.remove('fa-eye-slash');
+    eye.classList.add('fa-eye');
+  }
+}
+
+// Désactive le bouton si les champs sont vides
+function checkLoginFields() {
+  const user = document.getElementById('id_username');
+  const pwd = document.getElementById('id_password');
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = !(user.value.trim() && pwd.value.trim());
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const user = document.getElementById('id_username');
+  const pwd = document.getElementById('id_password');
+  const btn = document.getElementById('loginBtn');
+  if (user && pwd && btn) {
+    user.addEventListener('input', checkLoginFields);
+    pwd.addEventListener('input', checkLoginFields);
+    checkLoginFields();
+  }
+
+  // Animation shake si erreur
+  const card = document.querySelector('.login-card');
+  const alert = document.querySelector('.alert-danger');
+  if (card && alert) {
+    card.classList.add('shake');
+    setTimeout(() => card.classList.remove('shake'), 400);
+  }
+});
+</script>
+{% endblock %}
+
 {% block content %}
-  <h1>Connexion</h1>
-  {% if messages %}
-    {% for msg in messages %}
-      <div class="alert alert-danger">{{ msg }}</div>
-    {% endfor %}
-  {% endif %}
-  <form method="post">
-    {% csrf_token %}
-    <div>
-      <label for="id_username">Nom d’utilisateur :</label>
-      <input type="text" name="username" id="id_username" required autofocus>
-    </div>
-    <div>
-      <label for="id_password">Mot de passe :</label>
-      <input type="password" name="password" id="id_password" required>
-    </div>
-    <button type="submit">Se connecter</button>
-  </form>
+<div class="bg-blobs-login">
+  <div class="blob-login blob1-login"></div>
+  <div class="blob-login blob2-login"></div>
+  <div class="blob-login blob3-login"></div>
+  <div class="blob-login blob4-login"></div>
+</div>
+<div class="login-container">
+  <div class="login-card">
+    <img src="{% static 'images/sun-square-logo.jpg' %}" alt="Logo Sun Square" class="login-logo">
+    <div class="login-title">Connexion</div>
+    {% if messages %}
+      {% for msg in messages %}
+        <div class="alert alert-danger w-100">{{ msg }}</div>
+      {% endfor %}
+    {% endif %}
+    <form method="post" autocomplete="on" class="w-100">
+      {% csrf_token %}
+      <div class="mb-2 input-group">
+        <span class="input-icon"><i class="fa fa-user"></i></span>
+        <input type="text" name="username" id="id_username" class="form-control" required autofocus placeholder="Votre identifiant">
+      </div>
+      <div class="mb-2 input-group">
+        <span class="input-icon"><i class="fa fa-lock"></i></span>
+        <input type="password" name="password" id="id_password" class="form-control" required placeholder="Votre mot de passe">
+        <span class="toggle-password fa fa-eye" id="togglePwd" onclick="togglePassword()"></span>
+      </div>
+      <div class="login-links">
+        <a href="#" tabindex="-1">Mot de passe oublié ?</a>
+        <a href="/">Retour à l'accueil</a>
+      </div>
+      <button type="submit" class="btn btn-login" id="loginBtn">Se connecter</button>
+    </form>
+    <div class="login-footer">© Sun Square – Plateforme d’apprentissage du Coran</div>
+  </div>
+</div>
 {% endblock %}

@@ -3,6 +3,7 @@
 from django import forms
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from .models import CustomUser
+from .models import Presence,Progress, Child
 
 class CustomUserCreationForm(forms.ModelForm):
     """
@@ -45,3 +46,34 @@ class CustomUserChangeForm(forms.ModelForm):
             'is_active', 'is_superuser',
             'groups', 'user_permissions'
         )
+
+
+class PresenceForm(forms.ModelForm):
+    class Meta:
+        model = Presence
+        fields = ['child', 'date', 'present']
+        widgets = {
+            'child':   forms.Select(attrs={'class': 'form-select'}),
+            'date':    forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'present': forms.RadioSelect(choices=[(True, 'Oui'), (False, 'Non')]),
+        }
+class ProgressForm(forms.ModelForm):
+    class Meta:
+        model = Progress
+        fields = [
+            'child', 'surah', 'verse', 'hizb',
+            'chapter', 'note', 'comment',
+            'performance', 'date_retention', 'validated'
+        ]
+        widgets = {
+            'child':           forms.Select(attrs={'class': 'form-select'}),
+            'surah':           forms.TextInput(attrs={'class': 'form-control'}),
+            'verse':           forms.TextInput(attrs={'class': 'form-control'}),
+            'hizb':            forms.TextInput(attrs={'class': 'form-control'}),
+            'chapter':         forms.NumberInput(attrs={'class': 'form-control'}),
+            'note':            forms.TextInput(attrs={'class': 'form-control'}),
+            'comment':         forms.Textarea(attrs={'class': 'form-control', 'rows':3}),
+            'performance':     forms.NumberInput(attrs={'class': 'form-control', 'min':1, 'max':5}),
+            'date_retention':  forms.DateInput(attrs={'type':'date','class':'form-control'}),
+            'validated':       forms.CheckboxInput(attrs={'class':'form-check-input'}),
+        }

@@ -31,76 +31,49 @@
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
   {% block extra_css %}{% endblock %}
 </head>
-<body class="bg-light">
+<body class="bg-light" style="margin:0;padding:0;">
 
-  <!-- NAVBAR -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-    <div class="container-fluid">
-      <!-- Logo / Home publique -->
-      <a class="navbar-brand d-flex align-items-center" href="{% url 'inventory:home' %}">
-        <i class="fa fa-book-reader me-2"></i> Couran
+  <!-- HEADER HARMONISÉ COMPACT ET FONCTIONNEL -->
+  <header class="bg-white border-bottom" style="min-height:unset;margin:0;padding:0;position:fixed;top:0;left:0;width:100%;z-index:1000;">
+    <div class="container d-flex align-items-center justify-content-between" style="padding-top:0.5rem;padding-bottom:0.5rem;min-height:56px;">
+      <a href="/" class="d-flex align-items-center text-decoration-none">
+        <img src="/static/images/sun-square-logo.jpg" alt="Sun Square Logo" style="height:32px;width:auto;margin-right:10px;vertical-align:middle;">
+        <span class="fw-bold fs-4 text-dark" style="line-height:1;">Sun Square</span>
       </a>
-
-      <button class="navbar-toggler" type="button"
-              data-bs-toggle="collapse" data-bs-target="#mainNav"
-              aria-controls="mainNav" aria-expanded="false"
-              aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse" id="mainNav">
+      <nav class="d-flex align-items-center gap-2">
         {% if user.is_authenticated %}
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <ul class="nav me-2">
             {% if user.role == 'teacher' %}
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'inventory:child-list' %}">Enfants</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'inventory:progress-list' %}">Progression</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'inventory:presence-list' %}">Présences</a>
-              </li>
+              <li class="nav-item"><a class="nav-link px-2 text-dark" href="{% url 'inventory:child-list' %}">Enfants</a></li>
+              <li class="nav-item"><a class="nav-link px-2 text-dark" href="{% url 'inventory:progress-list' %}">Progression</a></li>
+              <li class="nav-item"><a class="nav-link px-2 text-dark" href="{% url 'inventory:presence-list' %}">Présences</a></li>
             {% elif user.role == 'admin' %}
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'inventory:teacher-list' %}">Professeurs</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'inventory:classroom-list' %}">Groupes</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'inventory:payment-list' %}">Cotisations</a>
-              </li>
+              <li class="nav-item"><a class="nav-link px-2 text-dark" href="{% url 'inventory:teacher-list' %}">Professeurs</a></li>
+              <li class="nav-item"><a class="nav-link px-2 text-dark" href="{% url 'inventory:classroom-list' %}">Groupes</a></li>
+              <li class="nav-item"><a class="nav-link px-2 text-dark" href="{% url 'inventory:payment-list' %}">Cotisations</a></li>
             {% endif %}
           </ul>
-
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button"
-                 data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fa fa-user-circle me-1"></i>{{ user.username }}
-              </a>
-              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
-                <li><a class="dropdown-item" href="#">Mon profil</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li>
-                  <a class="dropdown-item text-danger" href="{% url 'inventory:logout' %}">
-                    <i class="fa fa-sign-out-alt me-1"></i> Déconnexion
-                  </a>
-                </li>
-              </ul>
-            </li>
-          </ul>
+          <div class="dropdown">
+            <a class="btn btn-outline-dark rounded-pill px-3 dropdown-toggle" href="#" id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="height:38px;display:flex;align-items:center;">
+              <i class="fa fa-user-circle me-1"></i>{{ user.username }}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+              <li><a class="dropdown-item" href="#">Mon profil</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <a class="dropdown-item text-danger" href="{% url 'inventory:logout' %}">
+                  <i class="fa fa-sign-out-alt me-1"></i> Déconnexion
+                </a>
+              </li>
+            </ul>
+          </div>
         {% else %}
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'inventory:login' %}">Connexion</a>
-            </li>
-          </ul>
+          <a href="{% url 'inventory:login' %}" class="btn btn-outline-dark rounded-pill px-4" style="height:38px;display:flex;align-items:center;">Connexion</a>
         {% endif %}
-      </div>
+      </nav>
     </div>
-  </nav>
+  </header>
+  <div style="height:72px;"></div>
 
   <!-- BOÎTE À ALERTES (messages) -->
   <div class="container mt-3">

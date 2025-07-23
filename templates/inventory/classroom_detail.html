@@ -1,0 +1,13 @@
+{% for cls in classes %}
+  <a href="{% url 'inventory:classroom-edit' cls.pk %}"
+     class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+    {{ cls.name }}
+    <span class="badge bg-primary rounded-pill">
+      {{ cls.children.count }} élèves
+    </span>
+  </a>
+{% empty %}
+  <div class="list-group-item text-center">
+    Vous n’êtes affecté à aucun groupe.
+  </div>
+{% endfor %}

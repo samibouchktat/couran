@@ -116,3 +116,22 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 {% endblock %}
+
+{% block extra_css %}
+<style>
+.btn-success {
+  background: linear-gradient(90deg, #43cea2 60%, #185a9d 100%);
+  border: none;
+  color: #fff;
+}
+.btn-danger {
+  background: linear-gradient(90deg, #ff5858 60%, #f09819 100%);
+  border: none;
+  color: #fff;
+}
+.btn-success:hover, .btn-danger:hover {
+  opacity: 0.9;
+  transform: scale(1.03);
+}
+</style>
+{% endblock %}

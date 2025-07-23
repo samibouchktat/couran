@@ -9,40 +9,67 @@
     </a>
   </div>
 
-  {% if teachers %}
-    <div class="table-responsive">
-      <table class="table table-striped align-middle">
-        <thead class="table-dark">
-          <tr>
-            <th>Username</th>
-            <th>Nom</th>
-            <th>Email</th>
-            <th>École</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for teacher in teachers %}
+  <div class="d-flex mb-3" style="max-width:400px;">
+    <input id="teacher-search" type="text" class="form-control me-2" placeholder="Rechercher un professeur…">
+    <button id="teacher-search-btn" class="btn btn-outline-primary"><i class="fas fa-search"></i></button>
+  </div>
+
+  <div id="teacher-table-container">
+    {% if teachers %}
+      <div class="table-responsive">
+        <table class="table table-striped align-middle">
+          <thead class="table-dark">
             <tr>
-              <td>{{ teacher.username }}</td>
-              <td>{{ teacher.get_full_name }}</td>
-              <td>{{ teacher.email }}</td>
-              <td>{{ teacher.school.name|default:"—" }}</td>
-              <td>
-                <a href="{% url 'inventory:teacher-edit' teacher.pk %}" class="btn btn-sm btn-outline-secondary">
-                  <i class="fa fa-edit"></i>
-                </a>
-                <a href="{% url 'inventory:teacher-delete' teacher.pk %}" class="btn btn-sm btn-outline-danger">
-                  <i class="fa fa-trash"></i>
-                </a>
-              </td>
+              <th>Username</th>
+              <th>Nom</th>
+              <th>Email</th>
+              <th>École</th>
+              <th>Actions</th>
             </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  {% else %}
-    <p class="text-muted">Aucun professeur trouvé.</p>
-  {% endif %}
+          </thead>
+          <tbody id="teacher-table-body">
+            {% for teacher in teachers %}
+              <tr>
+                <td>{{ teacher.username }}</td>
+                <td>{{ teacher.get_full_name }}</td>
+                <td>{{ teacher.email }}</td>
+                <td>{{ teacher.school.name|default:"—" }}</td>
+                <td>
+                  <a href="{% url 'inventory:teacher-edit' teacher.pk %}" class="btn btn-sm btn-outline-secondary">
+                    <i class="fa fa-edit"></i>
+                  </a>
+                  <a href="{% url 'inventory:teacher-delete' teacher.pk %}" class="btn btn-sm btn-outline-danger">
+                    <i class="fa fa-trash"></i>
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="text-muted">Aucun professeur trouvé.</p>
+    {% endif %}
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Filtrage JS côté client (simple, sans AJAX)
+document.addEventListener('DOMContentLoaded', function() {
+  const input = document.getElementById('teacher-search');
+  const btn = document.getElementById('teacher-search-btn');
+  const table = document.getElementById('teacher-table-body');
+  function filterTable() {
+    const q = input.value.toLowerCase();
+    for (const row of table.rows) {
+      const text = row.innerText.toLowerCase();
+      row.style.display = text.includes(q) ? '' : 'none';
+    }
+  }
+  input.addEventListener('input', filterTable);
+  btn.addEventListener('click', filterTable);
+});
+</script>
 {% endblock %}
     

@@ -64,8 +64,8 @@
             <td>{{ prog.verse }}</td>
             <td>{{ prog.date_retention|date:"d/m/Y" }}</td>
             <td>
-              <a href="{% url 'progress-validate' prog.pk %}" class="btn btn-sm btn-success">Valider</a>
-              <a href="{% url 'progress-detail'   prog.pk %}" class="btn btn-sm btn-outline-secondary">Voir</a>
+              <a href="{% url 'inventory:progress-edit' prog.pk %}" class="btn btn-sm btn-success">Valider</a>
+              <a href="{% url 'inventory:progress-edit' prog.pk %}" class="btn btn-sm btn-outline-secondary">Voir</a>
             </td>
           </tr>
         {% empty %}
@@ -144,7 +144,7 @@
     <h2 class="h4">Mes groupes</h2>
     <div class="list-group">
       {% for cls in classes %}
-        <a href="{% url 'classroom-detail' cls.pk %}"
+        <a href="{% url 'inventory:classroom-detail' cls.pk %}"
            class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
           {{ cls.name }}
           <span class="badge bg-primary rounded-pill">
