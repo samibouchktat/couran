@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.utils import timezone
 from django.conf import settings
-from django.contrib.auth import get_user_model
 
 
 
