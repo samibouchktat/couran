@@ -1,0 +1,39 @@
+# pour MySQL par exemple
+mysqldump -u <user> -p<pass> nom_de_la_base > prod_backup.sql
+
+# 1) backup
+mysqldump … > prod_backup.sql
+
+# 2) pointez settings.py sur la base prod
+
+# 3) générez les migrations en dev (si ce n'est pas déjà fait)
+python manage.py makemigrations
+
+# 4) appliquez-les sur la prod, en ignorant les tables déjà là
+python manage.py migrate --fake-initial
+
+# 5) vérifiez
+python manage.py showmigrations
+
+
+DATABASES = {
+    'default': {
+        'ENGINE':   'django.db.backends.mysql',   # ou postgresql, sqlite…
+        'NAME':     'nom_de_la_base_prod',
+        'USER':     'prod_user',
+        'PASSWORD': 'secret',
+        'HOST':     'adresse_ou_ip',
+        'PORT':     '3306',
+    },
+    # éventuellement gardez 'dev' ou 'local' pour vos tests
+}
+
+
+
+python manage.py makemigrations
+
+
+python manage.py migrate --fake-initial
+
+
+python manage.py migrate

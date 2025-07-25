@@ -56,7 +56,8 @@ class Parent(models.Model):
     )
     address = models.CharField(max_length=255, blank=True, null=True)
     num_children = models.IntegerField(blank=True, null=True)
-
+    def __str__(self):
+        return self.user.get_full_name() or self.user.username
     class Meta:
         db_table = 'parents'
 
@@ -69,7 +70,9 @@ class Teacher(models.Model):
         db_column='id'
     )
     experience_years = models.IntegerField(blank=True, null=True)
-
+    def __str__(self):
+      
+        return self.user.get_full_name() or self.user.username
     class Meta:
         db_table = 'teachers'
 
@@ -88,6 +91,8 @@ class Classroom(models.Model):
     )
     uuid = models.CharField(max_length=255, unique=True, blank=True, null=True)
 
+    def __str__(self):
+        return self.name or f"Salle #{self.pk}"
     class Meta:
         db_table = 'classrooms'
 
@@ -102,6 +107,8 @@ class Child(models.Model):
     parent = models.ForeignKey(
         Parent, on_delete=models.SET_NULL, blank=True, null=True, db_column='parents_id'
     )
+    def __str__(self):
+        return self.user.get_full_name() or self.user.username
     classroom = models.ForeignKey(
         Classroom, on_delete=models.SET_NULL,
         blank=True, null=True, related_name='children'
@@ -114,6 +121,13 @@ class Child(models.Model):
 
 
 class Progress(models.Model):
+    PERFORMANCE_CHOICES = [
+        ('jiddan', 'جيد جداً'),
+        ('hassan', 'حسن'),
+        ('la baas', 'لا بأس به'),
+        ('mutawassit', 'متوسط'),
+        ('daif', 'ضعيف'),
+    ]
     id = models.BigAutoField(primary_key=True)
     child = models.ForeignKey(Child, on_delete=models.CASCADE, blank=True, null=True)
     surah = models.CharField(max_length=255, blank=True, null=True)
@@ -122,7 +136,14 @@ class Progress(models.Model):
     chapter = models.IntegerField(blank=True, null=True)
     note = models.CharField(max_length=255, blank=True, null=True)
     comment = models.CharField(max_length=255, blank=True, null=True)
-    performance = models.CharField(max_length=255, blank=True, null=True)
+
+
+    performance = models.CharField(
+        max_length=20,
+        choices=PERFORMANCE_CHOICES,
+        blank=True, null=True,
+        verbose_name='التقييم'
+    )
     date_retention = models.DateField(blank=True, null=True)
     validated = models.BooleanField(default=False)
     validated_by = models.ForeignKey(

@@ -4,7 +4,8 @@ from django import forms
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from .models import CustomUser
 from .models import Presence,Progress, Child
-
+from django import forms
+from .models import  Classroom, Parent
 class CustomUserCreationForm(forms.ModelForm):
     """
     Formulaire pour créer un nouvel utilisateur (admin ou prof).
@@ -58,6 +59,20 @@ class PresenceForm(forms.ModelForm):
             'present': forms.RadioSelect(choices=[(True, 'Oui'), (False, 'Non')]),
         }
 class ProgressForm(forms.ModelForm):
+    PERFORMANCE_CHOICES = [
+        ('1', 'ضعيف'),
+        ('2', 'متوسط'),
+        ('3', 'جيد'),
+        ('4', 'جيد جدًا'),
+        ('5', 'ممتاز'),
+    ]
+
+    performance = forms.ChoiceField(
+        choices=PERFORMANCE_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-select'}),
+        label='تقييم'
+    )
+
     class Meta:
         model = Progress
         fields = [
@@ -72,8 +87,90 @@ class ProgressForm(forms.ModelForm):
             'hizb':            forms.TextInput(attrs={'class': 'form-control'}),
             'chapter':         forms.NumberInput(attrs={'class': 'form-control'}),
             'note':            forms.TextInput(attrs={'class': 'form-control'}),
-            'comment':         forms.Textarea(attrs={'class': 'form-control', 'rows':3}),
-            'performance':     forms.NumberInput(attrs={'class': 'form-control', 'min':1, 'max':5}),
-            'date_retention':  forms.DateInput(attrs={'type':'date','class':'form-control'}),
-            'validated':       forms.CheckboxInput(attrs={'class':'form-check-input'}),
+            'comment':         forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            # on **ne** met **pas** 'performance' ici : on l’a déjà déclaré plus haut
+            'date_retention':  forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'validated':       forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
+        labels = {
+            'surah':          'سورة',
+            'verse':          'آيات',
+            'hizb':           'حزب',
+            'chapter':        'فصل',
+            'note':           'ملاحظة',
+            'comment':        'تعليق',
+            'date_retention': 'تاريخ المراجعة',
+            'validated':      'اعتماد التقدم',
+        }
+
+
+class ChildForm(forms.ModelForm):
+    class Meta:
+        model = Child
+        fields = ['user', 'classroom', 'parent', 'arabic_level', 'learning_level']
+
+    def __init__(self, *args, **kwargs):
+        # On récupère la requête pour filtrer les classes
+        request_user = kwargs.pop('request_user', None)
+        super().__init__(*args, **kwargs)
+
+        # Afficher le nom complet ou le username pour les users
+        self.fields['user'].label_from_instance = (
+            lambda obj: obj.get_full_name() or obj.username
+        )
+
+        # Optionnel : ne proposer que les CustomUser dont role == 'child'
+        # self.fields['user'].queryset = CustomUser.objects.filter(role='child')
+
+        # Limiter les salles au prof connecté
+        if request_user and request_user.role == 'teacher':
+            self.fields['classroom'].queryset = Classroom.objects.filter(
+                teacher__user=request_user
+            )
+# inventory/forms.py
+
+
+
+class ChildForm(forms.ModelForm):
+    class Meta:
+        model = Child
+        fields = ['user', 'classroom', 'parent', 'arabic_level', 'learning_level']
+
+    def __init__(self, *args, **kwargs):
+        request_user = kwargs.pop('request_user', None)
+        super().__init__(*args, **kwargs)
+
+        # === Élève  ===
+        # afficher nom complet ou username
+        self.fields['user'].label_from_instance = (
+            lambda u: u.get_full_name() or u.username
+        )
+        # si vous voulez limiter aux « enfants » :
+        # self.fields['user'].queryset = CustomUser.objects.filter(role='child')
+
+        # === Salle de classe ===
+        # n’afficher que les classes du prof connecté
+        if request_user and request_user.role == 'teacher':
+            self.fields['classroom'].queryset = Classroom.objects.filter(
+                teacher__user=request_user
+            )
+        # afficher le nom de la salle
+        self.fields['classroom'].label_from_instance = lambda cls: cls.name or f"Salle #{cls.pk}"
+
+        # === Parent ===
+        # si vous voulez limiter aux parents existants
+        self.fields['parent'].queryset = Parent.objects.all()
+        # afficher le nom du parent (via son user lié)
+        self.fields['parent'].label_from_instance = (
+            lambda p: p.user.get_full_name() or p.user.username
+        )
+class BulkAssignChildrenForm(forms.Form):
+    children = forms.ModelMultipleChoiceField(
+        queryset=Child.objects.select_related('user').all(),
+        widget=forms.CheckboxSelectMultiple,
+        label="Enfants à affecter"
+    )
+    classroom = forms.ModelChoiceField(
+        queryset=Classroom.objects.select_related('teacher__user').all(),
+        label="Classe (professeur associé)"
+    )   

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Tous les élèves{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+  <h1 class="mb-4">Tous les élèves</h1>
+  <table class="table table-hover align-middle">
+    <thead class="table-dark">
+      <tr>
+        <th>Élève</th>
+        <th>Classe actuelle</th>
+        <th>Professeur</th>
+        <th class="text-end">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in children %}
+      <tr>
+        <td>{{ c.user.get_full_name|default:c.user.username }}</td>
+        <td>{{ c.classroom.name|default:"—" }}</td>
+        <td>
+          {{ c.classroom.teacher.user.get_full_name|default:"—" }}
+        </td>
+        <td class="text-end">
+          <a href="{% url 'inventory:child-assign-class' c.pk %}"
+             class="btn btn-sm btn-outline-primary">
+            <i class="fas fa-user-tag"></i> Affecter
+          </a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="4" class="text-center">Aucun enfant trouvé.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

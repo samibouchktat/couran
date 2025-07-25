@@ -39,7 +39,7 @@
           <td>{{ prog.verse }}</td>
           <td>{{ prog.hizb }}</td>
           <td>{{ prog.chapter }}</td>
-          <td>{{ prog.performance }}</td>
+          <td>{{ prog.get_performance_display }}</td>
           <td>{{ prog.date_retention|date:"d/m/Y" }}</td>
           <td>
             {% if prog.validated %}

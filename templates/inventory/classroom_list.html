@@ -56,15 +56,13 @@
                                     <td>{{ classroom.date_created|date:"d/m/Y" }}</td>
                                     {% if user.role == 'admin' %}
                                     <td>
+                                        <a href="{% url 'inventory:classroom-detail' classroom.pk %}"
+                                           class="btn btn-sm btn-outline-info" title="Voir détails">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
                                         <div class="btn-group" role="group">
-                                            <a href="{% url 'inventory:classroom-edit' classroom.pk %}" 
-                                               class="btn btn-sm btn-outline-primary">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <a href="{% url 'inventory:classroom-delete' classroom.pk %}" 
-                                               class="btn btn-sm btn-outline-danger">
-                                                <i class="fas fa-trash"></i>
-                                            </a>
+                                            <a href="{% url 'inventory:classroom-edit' classroom.pk %}" class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></a>
+                          <a href="{% url 'inventory:classroom-delete' classroom.pk %}" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></a>
                                         </div>
                                     </td>
                                     {% endif %}

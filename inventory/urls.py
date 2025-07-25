@@ -34,7 +34,10 @@ urlpatterns = [
     path('children/add/', views.ChildCreateView.as_view(), name='child-add'),
     path('children/<int:pk>/edit/', views.ChildUpdateView.as_view(), name='child-edit'),
     path('children/<int:pk>/delete/', views.ChildDeleteView.as_view(), name='child-delete'),
-
+    # Liste des enfants (admin)
+    path('children/admin/', views.ChildAdminListView.as_view(), name='child-admin-list'),
+    # Vue d’édition réduite pour l’affectation de classe
+    path('children/<int:pk>/assign/', views.ChildAssignClassView.as_view(), name='child-assign-class'),
     # CRUD Progression
     path('progress/', views.ProgressListView.as_view(), name='progress-list'),
     path('progress/add/', views.ProgressCreateView.as_view(), name='progress-add'),
@@ -55,12 +58,9 @@ urlpatterns = [
     path('payments/<int:pk>/edit/',   views.PaymentUpdateView.as_view(), name='payment-edit'),
     path('payments/<int:pk>/delete/', views.PaymentDeleteView.as_view(), name='payment-delete'),
     # Présences
-        path(
-        'presence/export/<int:year>/<int:month>/',
-        views.export_presence_month,
-        name='presence-export'
-    ),
+    path('presence/export/<int:year>/<int:month>/', views.export_presence_month, name='presence-export'),
     path('presence/', views.PresenceListView.as_view(), name='presence-list'),
     path('presence/add/', views.PresenceCreateView.as_view(), name='presence-add'),
     path('presence/export/<int:year>/<int:month>/', views.export_presence_month, name='presence-export'),
+    path('children/assign-bulk/', views.BulkAssignChildrenView.as_view(), name='bulk-assign-children'),
 ]

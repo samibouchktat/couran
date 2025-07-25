@@ -12,11 +12,12 @@ import csv
 from django.db.models import Avg,F, ExpressionWrapper, DateField
 from django.db.models.functions import Now
 from .models import Classroom, Progress, Payment, Presence, CustomUser, Teacher, Child
-from .forms import CustomUserCreationForm ,PresenceForm,ProgressForm
+from .forms import CustomUserCreationForm ,PresenceForm,ProgressForm,BulkAssignChildrenForm,ChildForm
 from django.db.models import Q
 from django.http import JsonResponse
 from django.template.loader import render_to_string
-
+from django.views import View
+from .constants import SURAH_LIST 
 # ——————— Authentification unique ———————
 
 def home(request):
@@ -238,8 +239,36 @@ class ClassroomDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Classroom
     template_name = 'inventory/classroom_detail.html'
     context_object_name = 'classroom'
+
     def test_func(self):
-        return self.request.user.role in ['admin', 'teacher']
+        # seuls l’admin et le prof assigné peuvent voir sa classe
+        user = self.request.user
+        if user.role == 'admin':
+            return True
+        # pour le prof : on vérifie que c’est bien le sien
+        return self.get_object().teacher.user == user
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        cls = self.object
+        today = timezone.localdate()
+
+        # liste des enfants
+        ctx['children'] = Child.objects.filter(classroom=cls)
+
+        # présences du jour pour cette classe
+        ctx['todays_presences'] = Presence.objects.filter(
+            child__classroom=cls,
+            date=today
+        ).select_related('child__user')
+
+        # 10 derniers progrès (validés ou non) pour cette classe
+        ctx['recent_progress'] = Progress.objects.filter(
+            child__classroom=cls
+        ).order_by('-date_retention')[:10]
+
+        ctx['today'] = today
+        return ctx
 
 # ——————— CRUD Enfants (Child) ———————
 class ChildListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
@@ -255,26 +284,22 @@ class ChildListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
 class ChildCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Child
+    form_class = ChildForm
     template_name = 'inventory/child_form.html'
-    fields = ['user', 'classroom', 'parent', 'arabic_level', 'learning_level']
     success_url = reverse_lazy('inventory:child-list')
 
     def test_func(self):
         return self.request.user.role == 'teacher'
 
-    def get_form(self, *args, **kwargs):
-        form = super().get_form(*args, **kwargs)
-        # Ne proposer que les classes que ce prof enseigne
-        form.fields['classroom'].queryset = Classroom.objects.filter(
-            teacher__user=self.request.user
-        )
-        return form
-
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['request_user'] = self.request.user
+        return kwargs
 
 class ChildUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Child
+    form_class = ChildForm
     template_name = 'inventory/child_form.html'
-    fields = ['classroom', 'parent', 'arabic_level', 'learning_level']
     success_url = reverse_lazy('inventory:child-list')
 
     def test_func(self):
@@ -291,6 +316,7 @@ class ChildDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 # ——————— CRUD Progression (Progress) ———————
 class ProgressListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Progress
+        
     template_name = 'inventory/progress_list.html'
     context_object_name = 'progress_list'
 
@@ -313,19 +339,21 @@ class ProgressCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
-        # ne proposer que les enfants du prof connecté
         form.fields['child'].queryset = Child.objects.filter(
             classroom__teacher__user=self.request.user
         )
-        # optionnel : préremplir date_retention à aujourd’hui si vide
-        if not form.initial.get('date_retention'):
-            form.initial['date_retention'] = timezone.localdate()
+        form.initial.setdefault('date_retention', timezone.localdate())
         return form
 
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['surah_list'] = SURAH_LIST
+        return ctx
+
     def form_valid(self, form):
-        # forcer validated à False au début
         form.instance.validated = False
         return super().form_valid(form)
+
 
 class ProgressUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model         = Progress
@@ -338,17 +366,19 @@ class ProgressUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
-        # idem, restreindre le choix d'enfant
         form.fields['child'].queryset = Child.objects.filter(
             classroom__teacher__user=self.request.user
         )
-        # si déjà validé et admin, on peut garder coché
         return form
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['surah_list'] = SURAH_LIST
+        return ctx
 
     def form_valid(self, form):
         prog = form.save(commit=False)
         if prog.validated and not prog.validated_by:
-            from .models import Teacher
             prog.validated_by = Teacher.objects.get(user=self.request.user)
         prog.save()
         return super().form_valid(form)
@@ -537,3 +567,70 @@ def payment_export(request):
         ])
 
     return response
+
+
+
+class ChildAdminListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    """
+    Liste tous les enfants, avec un bouton d’affectation pour l’admin.
+    """
+    model = Child
+    template_name = 'inventory/child_admin_list.html'
+    context_object_name = 'children'
+
+    def test_func(self):
+        return self.request.user.role == 'admin'
+
+
+class ChildAssignClassView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    """
+    Édite uniquement le champ 'classroom' d’un enfant pour l’admin.
+    """
+    model = Child
+    fields = ['classroom']
+    template_name = 'inventory/child_assign_class.html'
+    success_url = reverse_lazy('inventory:child-admin-list')
+
+    def test_func(self):
+        return self.request.user.role == 'admin'
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        # On propose toutes les salles, ou on peut filtrer si besoin
+        form.fields['classroom'].queryset = Classroom.objects.all().select_related('teacher__user')
+        form.fields['classroom'].label = "Classe (professeur associé)"
+        return form
+    
+class BulkAssignChildrenView(LoginRequiredMixin, UserPassesTestMixin, View):
+    """
+    Vue pour l’affectation en bloc d’enfants à une classe.      
+    """
+    template_name = 'inventory/bulk_assign_children.html'
+
+    def test_func(self):
+        return self.request.user.role == 'admin'
+
+    def get(self, request):
+        form = BulkAssignChildrenForm()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
+        form = BulkAssignChildrenForm(request.POST)
+        if form.is_valid():
+            cls = form.cleaned_data['classroom']
+            children = form.cleaned_data['children']
+            # Affectation en bloc
+            children.update(classroom=cls)
+            messages.success(
+                request,
+                f"{children.count()} enfant(s) affecté(s) à la classe « {cls.name} »."
+            )
+            return redirect('inventory:bulk-assign-children')
+        return render(request, self.template_name, {'form': form})
+from django import template
+register = template.Library()
+
+@register.filter
+def add_class(field, css):
+    return field.as_widget(attrs={'class': css})
+   

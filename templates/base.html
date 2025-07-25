@@ -31,7 +31,9 @@
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
   {% block extra_css %}{% endblock %}
 </head>
+
 <body class="bg-light" style="margin:0;padding:0;">
+
 
   <!-- HEADER HARMONISÉ COMPACT ET FONCTIONNEL -->
   <header class="bg-white border-bottom" style="min-height:unset;margin:0;padding:0;position:fixed;top:0;left:0;width:100%;z-index:1000;">
@@ -51,7 +53,9 @@
               <li class="nav-item"><a class="nav-link px-2 text-dark" href="{% url 'inventory:teacher-list' %}">Professeurs</a></li>
               <li class="nav-item"><a class="nav-link px-2 text-dark" href="{% url 'inventory:classroom-list' %}">Groupes</a></li>
               <li class="nav-item"><a class="nav-link px-2 text-dark" href="{% url 'inventory:payment-list' %}">Cotisations</a></li>
-            {% endif %}
+              <li class="nav-item"><a class="nav-link px-2 text-dark" href="{% url 'inventory:child-admin-list' %}">Enfants</a></li>
+              <li class="nav-item"><a class="nav-link px-2 text-dark" href="{% url 'inventory:bulk-assign-children' %}">Affectation en masse</a></li>
+              {% endif %}
           </ul>
           <div class="dropdown">
             <a class="btn btn-outline-dark rounded-pill px-3 dropdown-toggle" href="#" id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="height:38px;display:flex;align-items:center;">

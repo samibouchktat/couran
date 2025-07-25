@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    'widget_tweaks',
     'inventory',
 ]
 
@@ -136,6 +137,6 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'inventory.CustomUser'
-LOGIN_REDIRECT_URL = 'home'      # où aller après login
-LOGOUT_REDIRECT_URL = 'home'     # où aller après logout
-LOGIN_URL = 'login'              # nom de la route login
+LOGIN_REDIRECT_URL = 'home'      
+LOGOUT_REDIRECT_URL = 'home'    
+LOGIN_URL = 'login'              
