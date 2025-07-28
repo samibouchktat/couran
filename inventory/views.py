@@ -18,6 +18,8 @@ from django.http import JsonResponse
 from django.template.loader import render_to_string
 from django.views import View
 from .constants import SURAH_LIST 
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 # ——————— Authentification unique ———————
 
 def home(request):
@@ -518,56 +520,47 @@ def export_presence_month(request, year, month):
     return response
 
 # ——————— Export CSV des paiements ———————
+
 @login_required
 def payment_export(request):
     """
-    Export CSV des paiements (UTF-8 + BOM) pour Excel.
-    Si ?filter=late, n’exporte que ceux dont due_date < aujourd’hui.
+    Export CSV des paiements, filtrés si ?filter=late.
+    Fonctionne pour les professeurs OU les admins.
     """
-    # Récupérer les groupes du prof connecté
-    classes = Classroom.objects.filter(teacher__user=request.user)
+    user = request.user
 
-    qs = Payment.objects.filter(child__classroom__in=classes)
+    if hasattr(user, 'teacher'):  # si c’est un professeur
+        classes = Classroom.objects.filter(teacher__user=user)
+        qs = Payment.objects.filter(child__classroom__in=classes)
+    else:  # si c’est un admin
+        qs = Payment.objects.all()
+
     if request.GET.get('filter') == 'late':
         qs = qs.filter(due_date__lt=timezone.localdate())
 
-    # Préparer la réponse CSV
     filename = 'paiements'
     if request.GET.get('filter') == 'late':
         filename += '_en_retard'
     filename += '.csv'
 
-    # Attention : on précise charset utf-8 et on ajoute un BOM
-    response = HttpResponse(
-        content_type='text/csv; charset=utf-8',
-    )
+    response = HttpResponse(content_type='text/csv; charset=utf-8')
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
-
-    # On écrit le BOM UTF-8 pour Excel
     response.write('\ufeff')
 
-    # Si vous préférez le point-virgule comme séparateur :
     writer = csv.writer(response, delimiter=';')
-    # Sinon, laisser delimiter=',' pour la virgule
+    writer.writerow(['Élève', 'Montant', 'Date paiement', 'Date échéance', 'Statut'])
 
-    # En-tête
-    writer.writerow([
-        'Élève', 'Montant', 'Date paiement', 'Date échéance', 'Statut'
-    ])
-
-    # Lignes
     for pay in qs.select_related('child__user'):
-        eleve = pay.child.user.get_full_name() or pay.child.user.username
+        eleve = pay.child.user.get_full_name() if pay.child and pay.child.user else '---'
         writer.writerow([
             eleve,
             f"{pay.amount:.2f}",
             pay.date_payment.strftime('%d/%m/%Y') if pay.date_payment else '',
-            pay.due_date.strftime('%d/%m/%Y')    if pay.due_date    else '',
-            pay.status or ''
+            pay.due_date.strftime('%d/%m/%Y') if pay.due_date else 'Non définie',
+            dict(Payment.STATUS_CHOICES).get(pay.status, '❓')
         ])
 
     return response
-
 
 
 class ChildAdminListView(LoginRequiredMixin, UserPassesTestMixin, ListView):

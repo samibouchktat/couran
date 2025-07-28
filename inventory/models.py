@@ -122,12 +122,13 @@ class Child(models.Model):
 
 class Progress(models.Model):
     PERFORMANCE_CHOICES = [
-        ('jiddan', 'جيد جداً'),
-        ('hassan', 'حسن'),
-        ('la baas', 'لا بأس به'),
-        ('mutawassit', 'متوسط'),
-        ('daif', 'ضعيف'),
+        ('ضعيف', 'ضعيف'),
+        ('متوسط', 'متوسط'),
+        ('جيد', 'جيد'),
+        ('جيد جدًا', 'جيد جدًا'),
+        ('ممتاز', 'ممتاز'),
     ]
+
     id = models.BigAutoField(primary_key=True)
     child = models.ForeignKey(Child, on_delete=models.CASCADE, blank=True, null=True)
     surah = models.CharField(max_length=255, blank=True, null=True)

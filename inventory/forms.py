@@ -60,12 +60,13 @@ class PresenceForm(forms.ModelForm):
         }
 class ProgressForm(forms.ModelForm):
     PERFORMANCE_CHOICES = [
-        ('1', 'ضعيف'),
-        ('2', 'متوسط'),
-        ('3', 'جيد'),
-        ('4', 'جيد جدًا'),
-        ('5', 'ممتاز'),
+        ('ضعيف', 'ضعيف'),
+        ('متوسط', 'متوسط'),
+        ('جيد', 'جيد'),
+        ('جيد جدًا', 'جيد جدًا'),
+        ('ممتاز', 'ممتاز'),
     ]
+
 
     performance = forms.ChoiceField(
         choices=PERFORMANCE_CHOICES,

@@ -150,4 +150,24 @@
         font-size: 0.875rem;
     }
 </style>
-{% endblock %} 
+
+{% endblock %}
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    flatpickr("#id_date_payment", {
+      altInput: true,
+      altFormat: "j F Y",
+      dateFormat: "Y-m-d",
+      locale: "fr"
+    });
+
+    flatpickr("#id_due_date", {
+      altInput: true,
+      altFormat: "j F Y",
+      dateFormat: "Y-m-d",
+      locale: "fr"
+    });
+  });
+</script>
+{% endblock %}
