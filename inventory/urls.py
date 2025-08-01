@@ -10,7 +10,8 @@ urlpatterns = [
     # Authentification
     path('', views.home, name='home'),
 
-    path('login/', views.custom_login, name='login'),
+    path('login/', views.custom_login, name='login'), 
+    
     path('logout/', lambda r: (logout(r), redirect('inventory:login'))[1], name='logout'),
     # Dashboards
     path('dashboard/admin/',   views.admin_dashboard,   name='admin_dashboard'),

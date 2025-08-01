@@ -50,6 +50,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'inventory.middleware.RoleBasedAccessMiddleware', 
 ]
 
 ROOT_URLCONF = 'couran.urls'
@@ -139,4 +140,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'inventory.CustomUser'
 LOGIN_REDIRECT_URL = 'home'      
 LOGOUT_REDIRECT_URL = 'home'    
-LOGIN_URL = 'login'              
+
+LOGIN_URL = 'inventory:login'
+             

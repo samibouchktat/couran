@@ -22,6 +22,7 @@ urlpatterns = [
     
     path('admin/', admin.site.urls),
     path('', include('inventory.urls', namespace='inventory')),
+    
     # On délègue la racine à inventory.urls, qui gère index, login, dashboards, CRUD…
 
 ]

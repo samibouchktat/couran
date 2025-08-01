@@ -108,3 +108,9 @@
   {% block extra_js %}{% endblock %}
 </body>
 </html>
+
+{% if user.is_authenticated %}
+    <p>Bienvenue, {{ user.username }} (<a href="{% url 'inventory:logout' %}">Se déconnecter</a>)</p>
+{% else %}
+    <p><a href="{% url 'inventory:login' %}">Connexion</a></p>
+{% endif %}
